@@ -1,4 +1,5 @@
 using UnityEngine;
+using ECM.Controllers;
 
 public class Player : MonoBehaviour
 {
@@ -20,35 +21,26 @@ public class Player : MonoBehaviour
     // This is what the server will update every tick
     public void FixedUpdate()
     {
-        Vector3 _moveDirection = Vector3.zero;
+        moveDirection = Vector3.zero;
         if (inputs[0] != 0)
         {
-            _moveDirection.x = inputs[0];
+            moveDirection.x = inputs[0];
         }
         if (inputs[1] != 0)
         {
-            _moveDirection.y = inputs[1];
+            moveDirection.y = inputs[1];
         }
         if (inputs[2] != 0)
         {
-            _moveDirection.z = inputs[2];
+            moveDirection.z = inputs[2];
         }
 
-        Move(_moveDirection);
+        SendMovement(moveDirection);
     }
 
     public void Update()
     {
 
-    }
-
-    // Sends this player's inputs to all clients
-    private void Move(Vector3 _moveDirection)
-    {
-        moveDirection = _moveDirection;
-
-        ServerSend.PlayerInput(this);
-        ServerSend.PlayerRotation(this);
     }
 
     // Stores this player's inputs to the server
@@ -58,10 +50,15 @@ public class Player : MonoBehaviour
         transform.rotation = _rotation;
     }
 
-    // Stores this player's position in the server
-    public void SetPosition(float[] _position, Quaternion _rotation)
+    // Sends this player's inputs to all clients
+    private void SendMovement(Vector3 _moveDirection)
     {
-        transform.position = new Vector3(_position[0], _position[1], _position[2]);
-        transform.rotation = _rotation;
+        // Store a copy of the client's input for local use
+        GetComponent<ServerFirstPersonController>().moveDirection = _moveDirection;
+
+        // Send a copy of the client's input to the other clients
+        ServerSend.PlayerPosition(this);
+        ServerSend.PlayerRotation(this);
+        ServerSend.PlayerInput(this);
     }
 }

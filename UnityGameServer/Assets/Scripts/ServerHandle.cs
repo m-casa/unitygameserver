@@ -29,17 +29,4 @@ public class ServerHandle
 
         Server.clients[_fromClient].player.SetInput(_inputs, _rotation);
     }
-
-    // Read the packet letting us know the player's new position
-    public static void PlayerPosition(int _fromClient, Packet _packet)
-    {
-        float[] _position = new float[_packet.ReadInt()];
-        for (int i = 0; i < _position.Length; i++)
-        {
-            _position[i] = _packet.ReadFloat();
-        }
-        Quaternion _rotation = _packet.ReadQuaternion();
-
-        Server.clients[_fromClient].player.SetPosition(_position, _rotation);
-    }
 }

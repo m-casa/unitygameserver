@@ -8,9 +8,10 @@ public enum ServerPackets
 {
     welcome = 1,
     spawnPlayer,
+    playerInput,
     playerPosition,
     playerRotation,
-    playerInput
+    destroyPlayer
 }
 
 /// <summary>Sent from client to server.</summary>

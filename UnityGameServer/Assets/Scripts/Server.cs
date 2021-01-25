@@ -169,4 +169,11 @@ public class Server
             };
         Debug.Log("Initialized packets.");
     }
+
+    // Closes our TCP and UDP connections on the server
+    public static void Stop()
+    {
+        tcpListener.Stop();
+        udpListener.Close();
+    }
 }

@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class ServerSend
 {
     // Send data to a specific client using TCP
@@ -89,13 +91,26 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to the client with player input information
+    public static void PlayerInput(Player _player, Vector3 _moveDirection)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerInput))
+        {
+            _packet.Write(_player.id);
+            _packet.Write(_moveDirection);
+
+            SendUDPDataToAll(_player.id, _packet);
+        }
+    }
+
     // Sends a packet to the client with player position information
-    public static void PlayerPosition(Player _player)
+    public static void PlayerPosition(Player _player, int _tickNumber)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
             _packet.Write(_player.id);
             _packet.Write(_player.transform.position);
+            _packet.Write(_tickNumber);
 
             SendUDPDataToAll(_packet);
         }
@@ -113,15 +128,14 @@ public class ServerSend
         }
     }
 
-    // Sends a packet to the client with player input information
-    public static void PlayerInput(Player _player)
+    // Sends a packet to the client letting them know which player to destroy
+    public static void DestroyPlayer(Player _player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.playerInput))
+        using (Packet _packet = new Packet((int)ServerPackets.destroyPlayer))
         {
             _packet.Write(_player.id);
-            _packet.Write(_player.moveDirection);
 
-            SendUDPDataToAll(_player.id, _packet);
+            SendTCPDataToAll(_player.id, _packet);
         }
     }
     #endregion

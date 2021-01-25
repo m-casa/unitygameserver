@@ -5,60 +5,46 @@ public class Player : MonoBehaviour
 {
     public int id;
     public string username;
-    public Vector3 moveDirection;
-
-    private float[] inputs;
 
     // Initialize a new player
     public void Initialize(int _id, string _username)
     {
         id = _id;
         username = _username;
-
-        inputs = new float[3];
     }
 
-    // This is what the server will update every tick
+    // Any FixedUpdate is what the server will update/send every tick
     public void FixedUpdate()
     {
-        moveDirection = Vector3.zero;
-        if (inputs[0] != 0)
-        {
-            moveDirection.x = inputs[0];
-        }
-        if (inputs[1] != 0)
-        {
-            moveDirection.y = inputs[1];
-        }
-        if (inputs[2] != 0)
-        {
-            moveDirection.z = inputs[2];
-        }
-
-        SendMovement(moveDirection);
-    }
-
-    public void Update()
-    {
 
     }
 
-    // Stores this player's inputs to the server
-    public void SetInput(float[] _inputs, Quaternion _rotation)
+    // Store the client's movement information on the server
+    public void SetMovement(Vector3 _moveDirection, Quaternion _rotation, int _tickNumber)
     {
-        inputs = _inputs;
-        transform.rotation = _rotation;
-    }
-
-    // Sends this player's inputs to all clients
-    private void SendMovement(Vector3 _moveDirection)
-    {
-        // Store a copy of the client's input for local use
+        // Update the server's characters with movement/rotation information
         GetComponent<ServerFirstPersonController>().moveDirection = _moveDirection;
+        transform.rotation = _rotation;
 
-        // Send a copy of the client's input to the other clients
-        ServerSend.PlayerPosition(this);
+        // Simulate movement for the characters by calling Physics.Simulate
+        // This will esentially run FixedUpdate manually
+        Physics.Simulate(Time.fixedDeltaTime);
+
+        // Update the tick to signify we've reached the end of the simulation
+        //  then send the server's position/rotation information of all players
+        SendPosition(_tickNumber + 1);
+    }
+
+    // Send a copy of the client's movement inputs to the other clients
+    public void SendInput(Vector3 _moveDirection)
+    {
+        ServerSend.PlayerInput(this, _moveDirection);
+    }
+
+    // Send a copy of the server's players to the other clients
+    public void SendPosition(int _tickNumber)
+    {
+        ServerSend.PlayerPosition(this, _tickNumber);
         ServerSend.PlayerRotation(this);
-        ServerSend.PlayerInput(this);
     }
 }

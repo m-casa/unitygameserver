@@ -29,12 +29,14 @@ public class NetworkManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = Constants.TICKS_PER_SEC;
 
-        // Will prevent the server from running in the editor which locks the port
-        #if UNITY_EDITOR
-        Debug.Log("Build the project to start the server!");
-        #else
         Server.Start(10, 26950);
-        #endif
+    }
+
+    // Unity editor does not properly close connections when leaving play mode until you enter play mode again
+    // So close the connection manually or else the port will be locked
+    private void OnApplicationQuit()
+    {
+        Server.Stop();
     }
 
     // Return a reference to the player

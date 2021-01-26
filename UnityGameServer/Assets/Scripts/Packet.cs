@@ -9,8 +9,9 @@ public enum ServerPackets
     welcome = 1,
     spawnPlayer,
     playerInput,
-    playerPosition,
     playerRotation,
+    playerPosition,
+    playerState,
     destroyPlayer
 }
 
@@ -18,7 +19,7 @@ public enum ServerPackets
 public enum ClientPackets
 {
     welcomeReceived = 1,
-    playerMovement
+    playerState
 }
 
 public class Packet : IDisposable

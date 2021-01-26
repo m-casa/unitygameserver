@@ -37,6 +37,12 @@ namespace ECM.Controllers
         #region PROPERTIES
 
         /// <summary>
+        /// Cached tick number.
+        /// </summary>
+
+        public int tickNumber { get; set; }
+
+        /// <summary>
         /// Cached camera pivot transform.
         /// </summary>
 
@@ -199,7 +205,6 @@ namespace ECM.Controllers
 
             // If using root motion and root motion is being applied (eg: grounded),
             // move without acceleration / deceleration, let the animation takes full control
-
             var desiredVelocity = CalcDesiredVelocity();
 
             if (useRootMotion && applyRootMotion)
@@ -207,7 +212,6 @@ namespace ECM.Controllers
             else
             {
                 // Move with acceleration and friction
-
                 var currentFriction = isGrounded ? groundFriction : airFriction;
                 var currentBrakingFriction = useBrakingFriction ? brakingFriction : currentFriction;
 
@@ -216,15 +220,19 @@ namespace ECM.Controllers
             }
 
             // Jump logic
-
             Jump();
             MidAirJump();
             UpdateJumpTimer();
 
             // Update root motion state,
             // should animator root motion be enabled? (eg: is grounded)
-
             applyRootMotion = useRootMotion && movement.isGrounded;
+
+            // Add a tick to signify that this is how the next state should look for the client
+            tickNumber++;
+
+            // Send a copy of the server's character state as soon as movement calculations finish
+            ServerSend.PlayerState(GetComponent<Player>().id, moveDirection, transform.position, tickNumber);
         }
 
         #endregion
@@ -296,7 +304,6 @@ namespace ECM.Controllers
         public override void FixedUpdate()
         {
             // Perform character movement
-
             Move();
         }
 

@@ -3,7 +3,6 @@ using UnityEngine;
 public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager instance;
-
     public GameObject playerPrefab;
     
     // Make sure there is only once instance of this manager
@@ -30,6 +29,13 @@ public class NetworkManager : MonoBehaviour
         Application.targetFrameRate = Constants.TICKS_PER_SEC;
 
         Server.Start(10, 26950);
+    }
+
+    // FixedUpdate will be called at the same rate as the tick rate
+    public void FixedUpdate()
+    {
+        // Simulate movement for every character on the server at once
+        Physics.Simulate(Time.fixedDeltaTime);
     }
 
     // Unity editor does not properly close connections when leaving play mode until you enter play mode again

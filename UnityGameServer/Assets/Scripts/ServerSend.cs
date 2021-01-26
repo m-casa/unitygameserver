@@ -103,28 +103,41 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to the client with player rotation information
+    public static void PlayerRotation(Player _player, Quaternion _rotation)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
+        {
+            _packet.Write(_player.id);
+            _packet.Write(_rotation);
+
+            SendUDPDataToAll(_player.id, _packet);
+        }
+    }
+
     // Sends a packet to the client with player position information
-    public static void PlayerPosition(Player _player, int _tickNumber)
+    public static void PlayerPosition(Player _player)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
             _packet.Write(_player.id);
             _packet.Write(_player.transform.position);
-            _packet.Write(_tickNumber);
 
             SendUDPDataToAll(_packet);
         }
     }
 
-    // Sends a packet to the client with player rotation information
-    public static void PlayerRotation(Player _player)
+    // Sends a packet to the client with the server's character state
+    public static void PlayerState(int _toClient, Vector3 _moveDirection, Vector3 _position, int _tickNumber)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
+        using (Packet _packet = new Packet((int)ServerPackets.playerState))
         {
-            _packet.Write(_player.id);
-            _packet.Write(_player.transform.rotation);
+            _packet.Write(_toClient);
+            _packet.Write(_moveDirection);
+            _packet.Write(_position);
+            _packet.Write(_tickNumber);
 
-            SendUDPDataToAll(_player.id, _packet);
+            SendUDPDataToAll(_packet);
         }
     }
 

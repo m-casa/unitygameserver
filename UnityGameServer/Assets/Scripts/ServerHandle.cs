@@ -17,14 +17,18 @@ public class ServerHandle
         Server.clients[_fromClient].SendIntoGame(_username);
     }
 
-    // Read the packet letting us know there was player movement
-    public static void PlayerMovement(int _fromClient, Packet _packet)
+    // Read the packet letting us know the client's state before movement calculations
+    public static void PlayerState(int _fromClient, Packet _packet)
     {
         Vector3 _moveDirection = _packet.ReadVector3();
         Quaternion _rotation = _packet.ReadQuaternion();
         int _tickNumber = _packet.ReadInt();
 
-        Server.clients[_fromClient].player.SendInput(_moveDirection);
-        Server.clients[_fromClient].player.SetMovement(_moveDirection, _rotation, _tickNumber);
+        // Send a copy of the client's movement inputs to the other clients
+        ServerSend.PlayerInput(Server.clients[_fromClient].player, _moveDirection);
+        ServerSend.PlayerRotation(Server.clients[_fromClient].player, _rotation);
+
+        // Store the client's state on the server
+        Server.clients[_fromClient].player.StoreState(_moveDirection, _rotation, _tickNumber);
     }
 }

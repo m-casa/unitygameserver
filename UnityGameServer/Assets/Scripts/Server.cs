@@ -163,10 +163,10 @@ public class Server
 
         // These packets are for receiving
         packetHandlers = new Dictionary<int, PacketHandler>
-            {
-                { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
-                { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
-            };
+        {
+            { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+            { (int)ClientPackets.playerState, ServerHandle.PlayerState },
+        };
         Debug.Log("Initialized packets.");
     }
 

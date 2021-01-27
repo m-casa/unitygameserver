@@ -232,7 +232,7 @@ namespace ECM.Controllers
             tickNumber++;
 
             // Send a copy of the server's character state as soon as movement calculations finish
-            ServerSend.PlayerState(GetComponent<Player>().id, moveDirection, transform.position, tickNumber);
+            ServerSend.PlayerState(GetComponent<Player>().id, transform.position, tickNumber);
         }
 
         #endregion

@@ -128,12 +128,11 @@ public class ServerSend
     }
 
     // Sends a packet to the client with the server's character state
-    public static void PlayerState(int _toClient, Vector3 _moveDirection, Vector3 _position, int _tickNumber)
+    public static void PlayerState(int _toClient, Vector3 _position, int _tickNumber)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerState))
         {
             _packet.Write(_toClient);
-            _packet.Write(_moveDirection);
             _packet.Write(_position);
             _packet.Write(_tickNumber);
 

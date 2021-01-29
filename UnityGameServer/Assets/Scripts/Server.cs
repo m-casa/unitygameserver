@@ -165,6 +165,7 @@ public class Server
         packetHandlers = new Dictionary<int, PacketHandler>
         {
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
+            { (int)ClientPackets.spawnRequest, ServerHandle.SpawnRequest },
             { (int)ClientPackets.playerState, ServerHandle.PlayerState },
         };
         Debug.Log("Initialized packets.");

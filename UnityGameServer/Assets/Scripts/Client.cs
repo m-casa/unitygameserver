@@ -239,10 +239,10 @@ public class Client
     }
 
     // Send our connected player into every client's game
-    public void SendIntoGame(string _playerName)
+    public void SendIntoGame(string _playerName, int _playerColor)
     {
         player = NetworkManager.instance.InstantiatePlayer();
-        player.Initialize(id, _playerName);
+        player.Initialize(id, _playerName, _playerColor);
 
         // Use this loop to go through our server's dictionary of clients
         // We'll use this dictionary to send the information of all other connected players to our new player

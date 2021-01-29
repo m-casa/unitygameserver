@@ -5,12 +5,14 @@ public class Player : MonoBehaviour
 {
     public int id;
     public string username;
+    public int color;
 
     // Initialize a new player
-    public void Initialize(int _id, string _username)
+    public void Initialize(int _id, string _username, int _color)
     {
         id = _id;
         username = _username;
+        color = _color;
     }
 
     // Store a copy of the client's state on the server

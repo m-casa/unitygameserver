@@ -9,12 +9,23 @@ public class ServerHandle
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
 
-        Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
         if (_fromClient != _clientIdCheck)
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
         }
-        //Server.clients[_fromClient].SendIntoGame(_username);
+        else
+        {
+            Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}.");
+        }
+    }
+
+    // Read the packet to spawn the player in everyone's instance
+    public static void SpawnRequest(int _fromClient, Packet _packet)
+    {
+        string _username = _packet.ReadString();
+        int _color = _packet.ReadInt();
+
+        Server.clients[_fromClient].SendIntoGame(_username, _color);
     }
 
     // Read the packet letting us know the client's state before movement calculations

@@ -275,9 +275,12 @@ public class Client
         // Since our code won't be run on the same thread, execute it on the main thread
         ThreadManager.ExecuteOnMainThread(() =>
         {
-            ServerSend.DestroyPlayer(player);
-            UnityEngine.Object.Destroy(player.gameObject);
-            player = null;
+            if (player != null)
+            {
+                ServerSend.DestroyPlayer(player);
+                UnityEngine.Object.Destroy(player.gameObject);
+                player = null;
+            }
         });
 
         tcp.Disconnect();

@@ -14,7 +14,7 @@ public class ServerHandle
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck})!");
         }
-        Server.clients[_fromClient].SendIntoGame(_username);
+        //Server.clients[_fromClient].SendIntoGame(_username);
     }
 
     // Read the packet letting us know the client's state before movement calculations

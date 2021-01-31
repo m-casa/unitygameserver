@@ -142,13 +142,13 @@ public class ServerSend
     }
 
     // Sends a packet to the client letting them know which player to destroy
-    public static void DestroyPlayer(Player _player)
+    public static void DestroyPlayer(int _id)
     {
         using (Packet _packet = new Packet((int)ServerPackets.destroyPlayer))
         {
-            _packet.Write(_player.id);
+            _packet.Write(_id);
 
-            SendTCPDataToAll(_player.id, _packet);
+            SendTCPDataToAll(_id, _packet);
         }
     }
     #endregion

@@ -241,6 +241,18 @@ public class Client
     // Send our connected player into every client's game
     public void SendIntoGame(string _playerName, int _playerColor)
     {
+        // Use this loop to check if there is already a player with the specified color
+        foreach (Client _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                if (_client.player.color == _playerColor)
+                {
+                    return;
+                }
+            }
+        }
+
         player = NetworkManager.instance.InstantiatePlayer();
         player.Initialize(id, _playerName, _playerColor);
 
@@ -277,7 +289,6 @@ public class Client
         {
             if (player != null)
             {
-                ServerSend.DestroyPlayer(player);
                 UnityEngine.Object.Destroy(player.gameObject);
                 player = null;
             }
@@ -285,5 +296,7 @@ public class Client
 
         tcp.Disconnect();
         udp.Disconnect();
+
+        ServerSend.DestroyPlayer(id);
     }
 }

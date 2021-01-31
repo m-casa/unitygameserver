@@ -35,11 +35,14 @@ public class ServerHandle
         Quaternion _rotation = _packet.ReadQuaternion();
         int _tickNumber = _packet.ReadInt();
 
-        // Send a copy of the client's movement inputs to the other clients
-        ServerSend.PlayerInput(Server.clients[_fromClient].player, _moveDirection);
-        ServerSend.PlayerRotation(Server.clients[_fromClient].player, _rotation);
+        if (Server.clients[_fromClient].player != null)
+        {
+            // Send a copy of the client's movement inputs to the other clients
+            ServerSend.PlayerInput(Server.clients[_fromClient].player, _moveDirection);
+            ServerSend.PlayerRotation(Server.clients[_fromClient].player, _rotation);
 
-        // Store the client's state on the server
-        Server.clients[_fromClient].player.StoreState(_moveDirection, _rotation, _tickNumber);
+            // Store the client's state on the server
+            Server.clients[_fromClient].player.StoreState(_moveDirection, _rotation, _tickNumber);
+        }
     }
 }

@@ -253,7 +253,7 @@ public class Client
             }
         }
 
-        player = NetworkManager.instance.InstantiatePlayer();
+        player = NetworkManager.instance.InstantiatePlayer(id);
         player.Initialize(id, _playerName, _playerColor);
 
         // Use this loop to go through our server's dictionary of clients

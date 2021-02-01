@@ -4,6 +4,7 @@ public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager instance;
     public GameObject playerPrefab;
+    public GameObject[] spawnPoints;
     private float timer;
     
     // Make sure there is only once instance of this manager
@@ -59,8 +60,8 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Return a reference to the player
-    public Player InstantiatePlayer()
+    public Player InstantiatePlayer(int _id)
     {
-        return Instantiate(playerPrefab, new Vector3(-8f, 0.3f, -40f), Quaternion.identity).GetComponent<Player>();
+        return Instantiate(playerPrefab, spawnPoints[_id - 1].transform.position, Quaternion.identity).GetComponent<Player>();
     }
 }

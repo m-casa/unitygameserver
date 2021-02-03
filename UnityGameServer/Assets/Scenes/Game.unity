@@ -1799,7 +1799,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 2890779290104014328, guid: 1dc854d02068cfd49990688c0062d4eb,
     type: 3}
-  spawnPoints:
+  lobbySpawnPoints:
   - {fileID: 250844806}
   - {fileID: 424020122}
   - {fileID: 203630347}
@@ -1810,6 +1810,17 @@ MonoBehaviour:
   - {fileID: 368804839}
   - {fileID: 1374543917}
   - {fileID: 1013377757}
+  shipSpawnPoints:
+  - {fileID: 128276627}
+  - {fileID: 1203924669}
+  - {fileID: 528787317}
+  - {fileID: 2004620785}
+  - {fileID: 1426511392}
+  - {fileID: 2031996008}
+  - {fileID: 1534615038}
+  - {fileID: 133384992}
+  - {fileID: 1064027239}
+  - {fileID: 646626940}
 --- !u!1 &1064027239
 GameObject:
   m_ObjectHideFlags: 0

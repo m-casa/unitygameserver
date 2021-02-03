@@ -20,7 +20,8 @@ public enum ClientPackets
 {
     welcomeReceived = 1,
     spawnRequest,
-    playerState
+    playerState,
+    roundRequest
 }
 
 public class Packet : IDisposable

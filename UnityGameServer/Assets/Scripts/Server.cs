@@ -167,6 +167,7 @@ public class Server
             { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
             { (int)ClientPackets.spawnRequest, ServerHandle.SpawnRequest },
             { (int)ClientPackets.playerState, ServerHandle.PlayerState },
+            { (int)ClientPackets.roundRequest, ServerHandle.RoundRequest },
         };
         Debug.Log("Initialized packets.");
     }

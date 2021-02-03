@@ -45,4 +45,14 @@ public class ServerHandle
             Server.clients[_fromClient].player.StoreState(_moveDirection, _rotation, _tickNumber);
         }
     }
+
+    // Read the packet letting us know to start the round
+    public static void RoundRequest(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
+
+        NetworkManager.instance.StartRound();
+    }
 }

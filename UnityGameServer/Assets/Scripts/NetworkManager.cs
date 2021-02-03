@@ -4,7 +4,8 @@ public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager instance;
     public GameObject playerPrefab;
-    public GameObject[] spawnPoints;
+    public GameObject[] lobbySpawnPoints;
+    public GameObject[] shipSpawnPoints;
     private float timer;
     
     // Make sure there is only once instance of this manager
@@ -62,6 +63,21 @@ public class NetworkManager : MonoBehaviour
     // Return a reference to the player
     public Player InstantiatePlayer(int _id)
     {
-        return Instantiate(playerPrefab, spawnPoints[_id - 1].transform.position, Quaternion.identity).GetComponent<Player>();
+        return Instantiate(playerPrefab, lobbySpawnPoints[_id - 1].transform.position, Quaternion.identity).GetComponent<Player>();
+    }
+
+    // Spawn the players into the ship
+    public void StartRound()
+    {
+        int i = 0;
+
+        foreach (Client _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                _client.player.transform.position = shipSpawnPoints[i].transform.position;
+                i++;
+            }
+        }
     }
 }

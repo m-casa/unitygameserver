@@ -3,9 +3,10 @@ using ECM.Controllers;
 
 public class Player : MonoBehaviour
 {
-    public int id;
+    public int id, color;
     public string username;
-    public int color;
+    public bool isImposter;
+    public bool isDead;
 
     // Initialize a new player
     public void Initialize(int _id, string _username, int _color)

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Server
 {
-    public static int maxPlayers { get; private set; }
+    public static int maxPlayers { get; set; }
     public static int port { get; private set; }
 
     // A new dictionary to keep track of our clients and their ids

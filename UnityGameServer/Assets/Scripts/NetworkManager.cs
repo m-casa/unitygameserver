@@ -4,8 +4,8 @@ public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager instance;
     public GameObject playerPrefab;
-    public GameObject[] lobbySpawnPoints;
-    public GameObject[] shipSpawnPoints;
+    public GameObject[] lobbySpawnPoints, shipSpawnPoints;
+    public int playerCount;
     private float timer;
     
     // Make sure there is only once instance of this manager
@@ -14,6 +14,7 @@ public class NetworkManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            playerCount = 0;
             timer = 0;
         }
         else if (instance != this)
@@ -66,18 +67,38 @@ public class NetworkManager : MonoBehaviour
         return Instantiate(playerPrefab, lobbySpawnPoints[_id - 1].transform.position, Quaternion.identity).GetComponent<Player>();
     }
 
-    // Spawn the players into the ship
+    // Choose which players will be the imposters
+    public void ChooseImposters()
+    {
+        int rng = Random.Range(1, playerCount + 1);
+        int rng2 = rng;
+
+        if (playerCount <= 6)
+        {
+            Server.clients[rng].player.isImposter = true;
+        }
+        else
+        {
+            while (rng2 == rng)
+            {
+                rng2 = Random.Range(1, playerCount + 1);
+            }
+
+            Server.clients[rng].player.isImposter = true;
+            Server.clients[rng2].player.isImposter = true;
+        }
+
+        StartRound();
+    }
+
+    // Set which players are the imposters in each client's game and spawn the players into the ship
     public void StartRound()
     {
-        int i = 0;
-
-        foreach (Client _client in Server.clients.Values)
+        for (int i = 1; i <= playerCount; i++)
         {
-            if (_client.player != null)
-            {
-                _client.player.transform.position = shipSpawnPoints[i].transform.position;
-                i++;
-            }
+            ServerSend.PlayerRole(Server.clients[i].id, Server.clients[i].player.isImposter);
+
+            Server.clients[i].player.transform.position = shipSpawnPoints[i - 1].transform.position;
         }
     }
 }

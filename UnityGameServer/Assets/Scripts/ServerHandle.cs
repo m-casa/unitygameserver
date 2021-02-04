@@ -51,8 +51,8 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
+        Debug.Log($"Received a request from the host to \"{_msg}\"");
 
-        NetworkManager.instance.StartRound();
+        NetworkManager.instance.ChooseImposters();
     }
 }

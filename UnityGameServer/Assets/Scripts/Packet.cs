@@ -12,6 +12,7 @@ public enum ServerPackets
     playerRotation,
     playerPosition,
     playerState,
+    playerRole,
     destroyPlayer
 }
 

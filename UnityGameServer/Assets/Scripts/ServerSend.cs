@@ -141,6 +141,18 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to the client letting them know the player's role
+    public static void PlayerRole(int _toClient, bool _isImposter)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerRole))
+        {
+            _packet.Write(_toClient);
+            _packet.Write(_isImposter);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to the client letting them know which player to destroy
     public static void DestroyPlayer(int _id)
     {

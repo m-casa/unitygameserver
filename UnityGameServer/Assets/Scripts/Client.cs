@@ -255,6 +255,7 @@ public class Client
 
         player = NetworkManager.instance.InstantiatePlayer(id);
         player.Initialize(id, _playerName, _playerColor);
+        NetworkManager.instance.playerCount++;
 
         // Use this loop to go through our server's dictionary of clients
         // We'll use this dictionary to send the information of all other connected players to our new player
@@ -291,6 +292,7 @@ public class Client
             {
                 UnityEngine.Object.Destroy(player.gameObject);
                 player = null;
+                NetworkManager.instance.playerCount--;
             }
         });
 

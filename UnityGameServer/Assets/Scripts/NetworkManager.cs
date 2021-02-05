@@ -5,8 +5,9 @@ public class NetworkManager : MonoBehaviour
     public static NetworkManager instance;
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
-    public int playerCount;
+    public int playerCount, crewmateCount, imposterCount;
     private float timer;
+    private bool activeRound;
     
     // Make sure there is only once instance of this manager
     private void Awake()
@@ -15,7 +16,10 @@ public class NetworkManager : MonoBehaviour
         {
             instance = this;
             playerCount = 0;
+            crewmateCount = 0;
+            imposterCount = 0;
             timer = 0;
+            activeRound = false;
         }
         else if (instance != this)
         {
@@ -54,6 +58,25 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    // Update will be called at the same rate as the tick rate
+    public void Update()
+    {
+        // If there is an active round, decide when crewmates or imposters win
+        if (activeRound)
+        {
+            if (crewmateCount == imposterCount)
+            {
+                // End the round and notify players that the imposters have won
+                EndRound("Imposters");
+            }
+            else if (imposterCount == 0)
+            {
+                // End the round and notify players that the crewmates have won
+                EndRound("Crewmates");
+            }
+        }
+    }
+
     // Unity editor does not properly close connections when leaving play mode until you enter play mode again
     // So close the connection manually or else the port will be locked
     private void OnApplicationQuit()
@@ -76,6 +99,9 @@ public class NetworkManager : MonoBehaviour
         if (playerCount <= 6)
         {
             Server.clients[rng].player.isImposter = true;
+
+            crewmateCount = playerCount - 1;
+            imposterCount = 1;
         }
         else
         {
@@ -86,19 +112,45 @@ public class NetworkManager : MonoBehaviour
 
             Server.clients[rng].player.isImposter = true;
             Server.clients[rng2].player.isImposter = true;
+
+            crewmateCount = playerCount - 2;
+            imposterCount = 2;
         }
 
         StartRound();
     }
 
-    // Set which players are the imposters in each client's game and spawn the players into the ship
-    public void StartRound()
+    // Spawn the players into the ship
+    private void StartRound()
     {
-        for (int i = 1; i <= playerCount; i++)
+        // Send the clients their roles and spawn them in the ship
+        foreach (Client _client in Server.clients.Values)
         {
-            ServerSend.PlayerRole(Server.clients[i].id, Server.clients[i].player.isImposter);
-
-            Server.clients[i].player.transform.position = shipSpawnPoints[i - 1].transform.position;
+            if (_client.player != null)
+            {
+                ServerSend.PlayerRole(_client.id, _client.player.isImposter);
+                _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
+            }
         }
+
+       activeRound = true;
+    }
+
+    // Spawn the players into the lobby
+    private void EndRound(string _winningTeam)
+    {
+        // Send the clients the winning team, reset everyone's roles and spawn them in the lobby
+        foreach (Client _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                ServerSend.Winners(_client.id, _winningTeam);
+                _client.player.isImposter = false;
+                _client.player.isDead = false;
+                _client.player.transform.position = lobbySpawnPoints[_client.id - 1].transform.position;
+            }
+        }
+
+        activeRound = false;
     }
 }

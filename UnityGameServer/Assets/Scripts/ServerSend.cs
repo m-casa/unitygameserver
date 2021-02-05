@@ -153,6 +153,29 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server letting them know which player died
+    public static void KillPlayer(int _fromClient, int _targetId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.killPlayer))
+        {
+            _packet.Write(_targetId);
+
+            SendTCPDataToAll(_fromClient, _packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know which team won
+    public static void Winners(int _toClient, string _winningTeam)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.winners))
+        {
+            _packet.Write(_toClient);
+            _packet.Write(_winningTeam);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to the client letting them know which player to destroy
     public static void DestroyPlayer(int _id)
     {

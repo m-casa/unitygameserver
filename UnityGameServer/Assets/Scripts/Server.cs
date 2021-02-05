@@ -45,6 +45,12 @@ public class Server
         // Will listen in on the specified port with UDP for any IP Address trying to connect
         udpListener = new UdpClient(port);
 
+        // Will reset the udp listener if an exception occurs and closes the connection
+        uint IOC_IN = 0x80000000;
+        uint IOC_VENDOR = 0x18000000;
+        uint SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+        udpListener.Client.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
+
         // Accept any client that attempts to connect
         udpListener.BeginReceive(UDPReceiveCallback, null);
 
@@ -168,6 +174,7 @@ public class Server
             { (int)ClientPackets.spawnRequest, ServerHandle.SpawnRequest },
             { (int)ClientPackets.playerState, ServerHandle.PlayerState },
             { (int)ClientPackets.roundRequest, ServerHandle.RoundRequest },
+            { (int)ClientPackets.killRequest, ServerHandle.KillRequest },
         };
         Debug.Log("Initialized packets.");
     }

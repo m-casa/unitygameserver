@@ -13,6 +13,8 @@ public enum ServerPackets
     playerPosition,
     playerState,
     playerRole,
+    killPlayer,
+    winners,
     destroyPlayer
 }
 
@@ -22,7 +24,8 @@ public enum ClientPackets
     welcomeReceived = 1,
     spawnRequest,
     playerState,
-    roundRequest
+    roundRequest,
+    killRequest
 }
 
 public class Packet : IDisposable

@@ -257,6 +257,15 @@ public class Client
         player.Initialize(id, _playerName, _playerColor);
         NetworkManager.instance.playerCount++;
 
+        // Use this loop to send information on our new player to all other connected players (including the new player)
+        foreach (Client _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                ServerSend.SpawnPlayer(_client.id, player);
+            }
+        }
+
         // Use this loop to go through our server's dictionary of clients
         // We'll use this dictionary to send the information of all other connected players to our new player
         foreach (Client _client in Server.clients.Values)
@@ -267,15 +276,6 @@ public class Client
                 {
                     ServerSend.SpawnPlayer(id, _client.player);
                 }
-            }
-        }
-
-        // Use this loop to send information on our new player to all other connected players (including the new player)
-        foreach (Client _client in Server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                ServerSend.SpawnPlayer(_client.id, player);
             }
         }
     }
@@ -290,6 +290,24 @@ public class Client
         {
             if (player != null)
             {
+                // Check if the player is am imposter before disconnecting them
+                if (player.isImposter)
+                {
+                    // If the player is an imposter and they haven't died, subtract from the imposter count
+                    if (!player.isDead)
+                    {
+                        NetworkManager.instance.imposterCount--;
+                    }
+                }
+                else
+                {
+                    // If the player is a crewmate and they haven't died, subtract from the crewmate count
+                    if (!player.isDead)
+                    {
+                        NetworkManager.instance.crewmateCount--;
+                    }
+                }
+
                 UnityEngine.Object.Destroy(player.gameObject);
                 player = null;
                 NetworkManager.instance.playerCount--;

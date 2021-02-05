@@ -51,8 +51,21 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Received a request from the host to \"{_msg}\"");
+        Debug.Log($"Received a request from the host (client {_fromClient}) to \"{_msg}\"");
 
         NetworkManager.instance.ChooseImposters();
+    }
+
+    // Read a packet specifying which player was just killed
+    public static void KillRequest(int _fromClient, Packet _packet)
+    {
+        int fromClient = _fromClient;
+        int targetId = _packet.ReadInt();
+
+        ServerSend.KillPlayer(fromClient, targetId);
+
+        // Keep track of which crewmate was killed
+        Server.clients[targetId].player.isDead = true;
+        NetworkManager.instance.crewmateCount--;
     }
 }

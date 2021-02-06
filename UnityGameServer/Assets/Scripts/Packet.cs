@@ -14,6 +14,7 @@ public enum ServerPackets
     playerState,
     playerRole,
     killPlayer,
+    reportBody,
     winners,
     destroyPlayer
 }
@@ -25,6 +26,7 @@ public enum ClientPackets
     spawnRequest,
     playerState,
     roundRequest,
+    reportRequest,
     killRequest
 }
 

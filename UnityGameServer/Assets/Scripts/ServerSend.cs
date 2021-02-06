@@ -164,6 +164,17 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server letting them know to despawn any dead bodies
+    public static void ReportBody(string _msg)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.reportBody))
+        {
+            _packet.Write(_msg);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to everyone on the server letting them know which team won
     public static void Winners(int _toClient, string _winningTeam)
     {

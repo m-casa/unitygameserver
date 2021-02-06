@@ -175,6 +175,7 @@ public class Server
             { (int)ClientPackets.playerState, ServerHandle.PlayerState },
             { (int)ClientPackets.roundRequest, ServerHandle.RoundRequest },
             { (int)ClientPackets.killRequest, ServerHandle.KillRequest },
+            { (int)ClientPackets.reportRequest, ServerHandle.ReportRequest },
         };
         Debug.Log("Initialized packets.");
     }

@@ -10,7 +10,7 @@ public class NetworkManager : MonoBehaviour
     private bool activeRound;
     
     // Make sure there is only once instance of this manager
-    private void Awake()
+    public void Awake()
     {
         if (instance == null)
         {
@@ -29,7 +29,7 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Initialize the tick rate
-    private void Start()
+    public void Start()
     {
         // Don't let the server pump out lots of frames for no reason
         // This also sets our tick rate
@@ -77,13 +77,6 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
-    // Unity editor does not properly close connections when leaving play mode until you enter play mode again
-    // So close the connection manually or else the port will be locked
-    private void OnApplicationQuit()
-    {
-        Server.Stop();
-    }
-
     // Return a reference to the player
     public Player InstantiatePlayer(int _id)
     {
@@ -120,6 +113,19 @@ public class NetworkManager : MonoBehaviour
         StartRound();
     }
 
+    // Spawn all the players back in the cafeteria
+    public void StartMeeting()
+    {
+        // Spawn each player back in the cafeteria
+        foreach (Client _client in Server.clients.Values)
+        {
+            if (_client.player != null)
+            {
+                _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
+            }
+        }
+    }
+
     // Spawn the players into the ship
     private void StartRound()
     {
@@ -152,5 +158,12 @@ public class NetworkManager : MonoBehaviour
         }
 
         activeRound = false;
+    }
+
+    // Unity editor does not properly close connections when leaving play mode until you enter play mode again
+    // So close the connection manually or else the port will be locked
+    private void OnApplicationQuit()
+    {
+        Server.Stop();
     }
 }

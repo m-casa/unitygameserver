@@ -3,7 +3,7 @@ using ECM.Controllers;
 
 public class Player : MonoBehaviour
 {
-    public int id, color;
+    public int id, colorId;
     public string username;
     public bool isImposter, isDead;
 
@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     {
         id = _id;
         username = _username;
-        color = _color;
+        colorId = _color;
     }
 
     // Store a copy of the client's state on the server

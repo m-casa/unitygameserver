@@ -89,7 +89,7 @@ public class NetworkManager : MonoBehaviour
         int rng = Random.Range(1, playerCount + 1);
         int rng2 = rng;
 
-        if (playerCount <= 6)
+        if (playerCount <= 7)
         {
             Server.clients[rng].player.isImposter = true;
 
@@ -116,11 +116,12 @@ public class NetworkManager : MonoBehaviour
     // Spawn all the players back in the cafeteria
     public void StartMeeting()
     {
-        // Spawn each player back in the cafeteria
+        // Spawn each player back in the cafeteria and begin the meeting
         foreach (Client _client in Server.clients.Values)
         {
             if (_client.player != null)
             {
+                ServerSend.Meeting(_client.id, "The meeting has begun!");
                 _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
             }
         }

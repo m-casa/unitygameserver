@@ -15,6 +15,7 @@ public enum ServerPackets
     playerRole,
     killPlayer,
     reportBody,
+    meeting,
     winners,
     destroyPlayer
 }

@@ -84,7 +84,7 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
-            _packet.Write(_player.color);
+            _packet.Write(_player.colorId);
             _packet.Write(_player.transform.position);
             _packet.Write(_player.transform.rotation);
 
@@ -172,6 +172,17 @@ public class ServerSend
             _packet.Write(_msg);
 
             SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know to attend the meeting
+    public static void Meeting(int _toClient, string _msg)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.meeting))
+        {
+            _packet.Write(_msg);
+
+            SendTCPData(_toClient, _packet);
         }
     }
 

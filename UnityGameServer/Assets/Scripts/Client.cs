@@ -239,14 +239,14 @@ public class Client
     }
 
     // Send our connected player into every client's game
-    public void SendIntoGame(string _playerName, int _playerColor)
+    public void SendIntoGame(string _playerName, int _color)
     {
         // Use this loop to check if there is already a player with the specified color
         foreach (Client _client in Server.clients.Values)
         {
             if (_client.player != null)
             {
-                if (_client.player.color == _playerColor)
+                if (_client.player.colorId == _color)
                 {
                     return;
                 }
@@ -254,7 +254,7 @@ public class Client
         }
 
         player = NetworkManager.instance.InstantiatePlayer(id);
-        player.Initialize(id, _playerName, _playerColor);
+        player.Initialize(id, _playerName, _color);
         NetworkManager.instance.playerCount++;
 
         // Use this loop to send information on our new player to all other connected players (including the new player)

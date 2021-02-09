@@ -176,13 +176,35 @@ public class ServerSend
     }
 
     // Sends a packet to everyone on the server letting them know to attend the meeting
-    public static void Meeting(int _toClient, string _msg)
+    public static void Meeting(string _msg)
     {
         using (Packet _packet = new Packet((int)ServerPackets.meeting))
         {
             _packet.Write(_msg);
 
-            SendTCPData(_toClient, _packet);
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server with the remaining time for the meeting
+    public static void RemainingTime(float _meetingTimer)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.remainingTime))
+        {
+            _packet.Write(_meetingTimer);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know to resume the round
+    public static void ResumeRound(string _msg)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.resumeRound))
+        {
+            _packet.Write(_msg);
+
+            SendTCPDataToAll(_packet);
         }
     }
 

@@ -256,6 +256,7 @@ public class Client
         player = NetworkManager.instance.InstantiatePlayer(id);
         player.Initialize(id, _playerName, _color);
         NetworkManager.instance.playerCount++;
+        NetworkManager.instance.crewmateCount++;
 
         // Use this loop to send information on our new player to all other connected players (including the new player)
         foreach (Client _client in Server.clients.Values)

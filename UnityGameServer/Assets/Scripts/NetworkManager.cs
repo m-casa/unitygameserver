@@ -6,8 +6,8 @@ public class NetworkManager : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
     public int playerCount, crewmateCount, imposterCount;
-    private float timer;
-    private bool activeRound;
+    private float simulationTimer, meetingLength, meetingTimer;
+    private bool activeRound, activeMeeting;
     
     // Make sure there is only once instance of this manager
     public void Awake()
@@ -18,7 +18,9 @@ public class NetworkManager : MonoBehaviour
             playerCount = 0;
             crewmateCount = 0;
             imposterCount = 0;
-            timer = 0;
+            simulationTimer = 0;
+            meetingLength = 20;
+            meetingTimer = 0;
             activeRound = false;
         }
         else if (instance != this)
@@ -44,14 +46,14 @@ public class NetworkManager : MonoBehaviour
     public void FixedUpdate()
     {
         // Record at what point in time the last frame finished rendering
-        timer += Time.deltaTime;
+        simulationTimer += Time.deltaTime;
 
         // Catch up with the game time.
         // Advance the physics simulation in portions of Time.fixedDeltaTime
         // Note that generally, we don't want to pass variable delta to Simulate as that leads to unstable results.
-        while (timer >= Time.fixedDeltaTime)
+        while (simulationTimer >= Time.fixedDeltaTime)
         {
-            timer -= Time.fixedDeltaTime;
+            simulationTimer -= Time.fixedDeltaTime;
 
             // Simulate movement for every character on the server at once
             Physics.Simulate(Time.fixedDeltaTime);
@@ -73,6 +75,24 @@ public class NetworkManager : MonoBehaviour
             {
                 // End the round and notify players that the crewmates have won
                 EndRound("Crewmates");
+            }
+        }
+
+        // If there is an active meeting, decide when to end it
+        if (activeMeeting)
+        {
+            // Gives the player an update on when the meeting will end
+            if (meetingTimer <= 0)
+            {
+                activeMeeting = false;
+
+                ServerSend.ResumeRound("Resume the current round!");
+            }
+            else
+            {
+                meetingTimer -= 1 * Time.deltaTime;
+
+                ServerSend.RemainingTime(meetingTimer);
             }
         }
     }
@@ -121,10 +141,14 @@ public class NetworkManager : MonoBehaviour
         {
             if (_client.player != null)
             {
-                ServerSend.Meeting(_client.id, "The meeting has begun!");
                 _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
             }
         }
+
+        ServerSend.Meeting("The meeting has begun!");
+
+        meetingTimer = meetingLength;
+        activeMeeting = true;
     }
 
     // Spawn the players into the ship

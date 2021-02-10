@@ -165,11 +165,11 @@ public class ServerSend
     }
 
     // Sends a packet to everyone on the server letting them know to despawn any dead bodies
-    public static void ReportBody(string _msg)
+    public static void ReportBody(int _reporter)
     {
         using (Packet _packet = new Packet((int)ServerPackets.reportBody))
         {
-            _packet.Write(_msg);
+            _packet.Write(_reporter);
 
             SendTCPDataToAll(_packet);
         }
@@ -192,6 +192,18 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.remainingTime))
         {
             _packet.Write(_meetingTimer);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know who was voted for
+    public static void PlayerVote(int _fromClient, int _playerId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.playerVote))
+        {
+            _packet.Write(_fromClient);
+            _packet.Write(_playerId);
 
             SendTCPDataToAll(_packet);
         }

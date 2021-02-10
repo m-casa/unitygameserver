@@ -19,7 +19,7 @@ public class NetworkManager : MonoBehaviour
             crewmateCount = 0;
             imposterCount = 0;
             simulationTimer = 0;
-            meetingLength = 20;
+            meetingLength = 35;
             meetingTimer = 0;
             activeRound = false;
         }
@@ -82,7 +82,7 @@ public class NetworkManager : MonoBehaviour
         if (activeMeeting)
         {
             // Gives the player an update on when the meeting will end
-            if (meetingTimer <= 0)
+            if (meetingTimer + 15 <= 0)
             {
                 activeMeeting = false;
 
@@ -147,7 +147,7 @@ public class NetworkManager : MonoBehaviour
 
         ServerSend.Meeting("The meeting has begun!");
 
-        meetingTimer = meetingLength;
+        meetingTimer = meetingLength - 15;
         activeMeeting = true;
     }
 

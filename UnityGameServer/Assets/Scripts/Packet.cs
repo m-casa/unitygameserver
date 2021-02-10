@@ -17,6 +17,7 @@ public enum ServerPackets
     reportBody,
     meeting,
     remainingTime,
+    playerVote,
     resumeRound,
     winners,
     destroyPlayer
@@ -30,6 +31,7 @@ public enum ClientPackets
     playerState,
     roundRequest,
     reportRequest,
+    playerVote,
     killRequest
 }
 

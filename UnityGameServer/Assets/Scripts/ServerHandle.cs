@@ -64,10 +64,18 @@ public class ServerHandle
         Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
 
         // Report the dead body to all clients
-        ServerSend.ReportBody("A body has been reported!");
+        ServerSend.ReportBody(_fromClient);
 
         // Start a meeting
         NetworkManager.instance.StartMeeting();
+    }
+
+    // Read the packet letting us know which player was voted for
+    public static void PlayerVote(int _fromClient, Packet _packet)
+    {
+        int playerId = _packet.ReadInt();
+
+        ServerSend.PlayerVote(_fromClient, playerId);
     }
 
     // Read a packet specifying which player was just killed

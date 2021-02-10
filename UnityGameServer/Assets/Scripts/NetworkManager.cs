@@ -7,7 +7,7 @@ public class NetworkManager : MonoBehaviour
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
     public int playerCount, crewmateCount, imposterCount;
     private float simulationTimer, meetingLength, meetingTimer;
-    private bool activeRound, activeMeeting;
+    private bool activeRound, activeMeeting, canConfirmEject;
     
     // Make sure there is only once instance of this manager
     public void Awake()
@@ -109,28 +109,36 @@ public class NetworkManager : MonoBehaviour
         int rng = Random.Range(1, playerCount + 1);
         int rng2 = rng;
 
-        if (playerCount <= 7)
+        try
         {
-            Server.clients[rng].player.isImposter = true;
-
-            crewmateCount = playerCount - 1;
-            imposterCount = 1;
-        }
-        else
-        {
-            while (rng2 == rng)
+            if (playerCount <= 7)
             {
-                rng2 = Random.Range(1, playerCount + 1);
+                Server.clients[rng].player.isImposter = true;
+
+                crewmateCount = playerCount - 1;
+                imposterCount = 1;
+            }
+            else
+            {
+                while (rng2 == rng)
+                {
+                    rng2 = Random.Range(1, playerCount + 1);
+                }
+
+                Server.clients[rng].player.isImposter = true;
+                Server.clients[rng2].player.isImposter = true;
+
+                crewmateCount = playerCount - 2;
+                imposterCount = 2;
             }
 
-            Server.clients[rng].player.isImposter = true;
-            Server.clients[rng2].player.isImposter = true;
-
-            crewmateCount = playerCount - 2;
-            imposterCount = 2;
+            StartRound();
         }
-
-        StartRound();
+        catch(System.Exception _ex)
+        {
+            Debug.Log($"Error picking an imposter: {_ex}");
+        }
+        
     }
 
     // Spawn all the players back in the cafeteria
@@ -149,6 +157,33 @@ public class NetworkManager : MonoBehaviour
 
         meetingTimer = meetingLength - 15;
         activeMeeting = true;
+        canConfirmEject = true;
+    }
+
+    // Confirm if the ejected player was an imposter or crewmate
+    public void CheckEjectedPlayer(int _ejectedId)
+    {
+        // Check if the server can confirm an eject or if someone is already being confirmed
+        if (canConfirmEject)
+        {
+            canConfirmEject = false;
+
+            // Make sure the player didn't rage quit and their body is still in the game
+            if (Server.clients[_ejectedId].player != null)
+            {
+                // Keep track of which crewmate was killed
+                Server.clients[_ejectedId].player.isDead = true;
+
+                if (Server.clients[_ejectedId].player.isImposter)
+                {
+                    imposterCount--;
+                }
+                else
+                {
+                    crewmateCount--;
+                }
+            }
+        }
     }
 
     // Spawn the players into the ship

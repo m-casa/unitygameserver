@@ -32,6 +32,7 @@ public enum ClientPackets
     roundRequest,
     reportRequest,
     playerVote,
+    confirmEject,
     killRequest
 }
 

@@ -56,6 +56,19 @@ public class ServerHandle
         NetworkManager.instance.ChooseImposters();
     }
 
+    // Read a packet specifying which player was just killed
+    public static void KillRequest(int _fromClient, Packet _packet)
+    {
+        int fromClient = _fromClient;
+        int targetId = _packet.ReadInt();
+
+        ServerSend.KillPlayer(fromClient, targetId);
+
+        // Keep track of which crewmate was killed
+        Server.clients[targetId].player.isDead = true;
+        NetworkManager.instance.crewmateCount--;
+    }
+
     // Read the packet letting us know to start the round
     public static void ReportRequest(int _fromClient, Packet _packet)
     {
@@ -78,16 +91,13 @@ public class ServerHandle
         ServerSend.PlayerVote(_fromClient, playerId);
     }
 
-    // Read a packet specifying which player was just killed
-    public static void KillRequest(int _fromClient, Packet _packet)
+    // Read a packet specifying which player was jejected
+    public static void ConfirmEject(int _fromClient, Packet _packet)
     {
-        int fromClient = _fromClient;
-        int targetId = _packet.ReadInt();
+        int ejectedId = _packet.ReadInt();
 
-        ServerSend.KillPlayer(fromClient, targetId);
+        Debug.Log($"Client {_fromClient} wants to confirm eject.");
 
-        // Keep track of which crewmate was killed
-        Server.clients[targetId].player.isDead = true;
-        NetworkManager.instance.crewmateCount--;
+        NetworkManager.instance.CheckEjectedPlayer(ejectedId);
     }
 }

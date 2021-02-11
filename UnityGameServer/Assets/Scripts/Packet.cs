@@ -30,10 +30,11 @@ public enum ClientPackets
     spawnRequest,
     playerState,
     roundRequest,
+    meetingRequest,
+    killRequest,
     reportRequest,
     playerVote,
-    confirmEject,
-    killRequest
+    confirmEject
 }
 
 public class Packet : IDisposable

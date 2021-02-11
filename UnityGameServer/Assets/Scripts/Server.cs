@@ -174,10 +174,11 @@ public class Server
             { (int)ClientPackets.spawnRequest, ServerHandle.SpawnRequest },
             { (int)ClientPackets.playerState, ServerHandle.PlayerState },
             { (int)ClientPackets.roundRequest, ServerHandle.RoundRequest },
+            { (int)ClientPackets.meetingRequest, ServerHandle.MeetingRequest },
             { (int)ClientPackets.killRequest, ServerHandle.KillRequest },
+            { (int)ClientPackets.reportRequest, ServerHandle.ReportRequest },
             { (int)ClientPackets.playerVote, ServerHandle.PlayerVote },
             { (int)ClientPackets.confirmEject, ServerHandle.ConfirmEject },
-            { (int)ClientPackets.reportRequest, ServerHandle.ReportRequest },
         };
         Debug.Log("Initialized packets.");
     }

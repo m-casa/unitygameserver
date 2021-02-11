@@ -56,6 +56,17 @@ public class ServerHandle
         NetworkManager.instance.ChooseImposters();
     }
 
+    // Read the packet letting us know to start the meeting
+    public static void MeetingRequest(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
+
+        // Start a meeting
+        NetworkManager.instance.StartMeeting();
+    }
+
     // Read a packet specifying which player was just killed
     public static void KillRequest(int _fromClient, Packet _packet)
     {

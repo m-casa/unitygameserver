@@ -3,6 +3,7 @@ using UnityEngine;
 public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager instance;
+
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
     public int playerCount, crewmateCount, imposterCount;
@@ -19,7 +20,7 @@ public class NetworkManager : MonoBehaviour
             crewmateCount = 0;
             imposterCount = 0;
             simulationTimer = 0;
-            meetingLength = 35;
+            meetingLength = 30;
             meetingTimer = 0;
             activeRound = false;
         }
@@ -82,7 +83,7 @@ public class NetworkManager : MonoBehaviour
         if (activeMeeting)
         {
             // Gives the player an update on when the meeting will end
-            if (meetingTimer + 15 <= 0)
+            if (meetingTimer + 10 <= 0)
             {
                 activeMeeting = false;
 
@@ -155,7 +156,7 @@ public class NetworkManager : MonoBehaviour
 
         ServerSend.Meeting("The meeting has begun!");
 
-        meetingTimer = meetingLength - 15;
+        meetingTimer = meetingLength - 10;
         activeMeeting = true;
         canConfirmEject = true;
     }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class Client
 {
     public static int dataBufferSize = 4096;
+
     public Player player;
     public int id;
     public TCP tcp;

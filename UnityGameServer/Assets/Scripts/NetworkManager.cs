@@ -6,9 +6,11 @@ public class NetworkManager : MonoBehaviour
 
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
+    public float totalTasks, completedTasks;
     public int playerCount, crewmateCount, imposterCount;
+    public bool activeRound;
     private float simulationTimer, meetingLength, meetingTimer;
-    private bool activeRound, activeMeeting, canConfirmEject;
+    private bool activeMeeting, canConfirmEject;
     
     // Make sure there is only once instance of this manager
     public void Awake()
@@ -19,10 +21,12 @@ public class NetworkManager : MonoBehaviour
             playerCount = 0;
             crewmateCount = 0;
             imposterCount = 0;
+            totalTasks = 0;
+            completedTasks = 0;
+            activeRound = false;
             simulationTimer = 0;
             meetingLength = 30;
             meetingTimer = 0;
-            activeRound = false;
         }
         else if (instance != this)
         {
@@ -73,6 +77,11 @@ public class NetworkManager : MonoBehaviour
                 EndRound("Imposters");
             }
             else if (imposterCount == 0)
+            {
+                // End the round and notify players that the crewmates have won
+                EndRound("Crewmates");
+            }
+            else if (completedTasks == totalTasks)
             {
                 // End the round and notify players that the crewmates have won
                 EndRound("Crewmates");
@@ -139,7 +148,6 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log($"Error picking an imposter: {_ex}");
         }
-        
     }
 
     // Spawn all the players back in the cafeteria
@@ -187,6 +195,18 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    // Updated the total completed tasks, and send the update to every client
+    public void UpdateCompletedTasks(float _numOfTasks)
+    {
+        float updatedValue;
+
+        completedTasks += _numOfTasks;
+
+        updatedValue = ((totalTasks - (totalTasks - completedTasks)) / totalTasks) * 100;
+
+        ServerSend.TaskUpdate(updatedValue);
+    }
+
     // Spawn the players into the ship
     private void StartRound()
     {
@@ -197,10 +217,18 @@ public class NetworkManager : MonoBehaviour
             {
                 ServerSend.PlayerRole(_client.id, _client.player.isImposter);
                 _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
+
+                // Setup the number of tasks needed to win
+                if (!_client.player.isImposter)
+                {
+                    totalTasks += 11;
+                }
             }
         }
 
-       activeRound = true;
+        completedTasks = 0;
+        UpdateCompletedTasks(0);
+        activeRound = true;
     }
 
     // Spawn the players into the lobby
@@ -214,10 +242,13 @@ public class NetworkManager : MonoBehaviour
                 ServerSend.Winners(_client.id, _winningTeam);
                 _client.player.isImposter = false;
                 _client.player.isDead = false;
+                _client.player.completedTasks = 0;
                 _client.player.transform.position = lobbySpawnPoints[_client.id - 1].transform.position;
             }
         }
 
+        totalTasks = 0;
+        completedTasks = 0;
         activeRound = false;
     }
 

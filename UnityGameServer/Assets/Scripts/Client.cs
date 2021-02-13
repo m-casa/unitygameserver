@@ -259,6 +259,13 @@ public class Client
         NetworkManager.instance.playerCount++;
         NetworkManager.instance.crewmateCount++;
 
+        // If there is an active round, update the tasks needed to win
+        if (NetworkManager.instance.activeRound)
+        {
+            NetworkManager.instance.totalTasks += 11;
+            NetworkManager.instance.UpdateCompletedTasks(0);
+        }
+
         // Use this loop to send information on our new player to all other connected players (including the new player)
         foreach (Client _client in Server.clients.Values)
         {
@@ -308,6 +315,11 @@ public class Client
                     {
                         NetworkManager.instance.crewmateCount--;
                     }
+
+                    // Update the amount of tasks needed to win
+                    NetworkManager.instance.completedTasks -= player.completedTasks;
+                    NetworkManager.instance.totalTasks -= 11;
+                    NetworkManager.instance.UpdateCompletedTasks(0);
                 }
 
                 UnityEngine.Object.Destroy(player.gameObject);

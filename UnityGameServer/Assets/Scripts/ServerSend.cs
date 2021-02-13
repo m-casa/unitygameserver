@@ -220,6 +220,17 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server that updates the task bar
+    public static void TaskUpdate(float _updatedValue)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.taskUpdate))
+        {
+            _packet.Write(_updatedValue);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to everyone on the server letting them know which team won
     public static void Winners(int _toClient, string _winningTeam)
     {

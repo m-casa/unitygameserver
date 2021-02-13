@@ -3,7 +3,7 @@ using ECM.Controllers;
 
 public class Player : MonoBehaviour
 {
-    public int id, colorId;
+    public int id, colorId, completedTasks;
     public string username;
     public bool isImposter, isDead;
 

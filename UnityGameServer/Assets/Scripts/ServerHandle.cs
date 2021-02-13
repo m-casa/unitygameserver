@@ -53,7 +53,11 @@ public class ServerHandle
 
         Debug.Log($"Received a request from the host (client {_fromClient}) to \"{_msg}\"");
 
-        NetworkManager.instance.ChooseImposters();
+        // Only start a round if there is no active round
+        if (!NetworkManager.instance.activeRound)
+        {
+            NetworkManager.instance.ChooseImposters();
+        }
     }
 
     // Read the packet letting us know to start the meeting
@@ -100,6 +104,18 @@ public class ServerHandle
         int playerId = _packet.ReadInt();
 
         ServerSend.PlayerVote(_fromClient, playerId);
+    }
+
+    // Read the packet letting us know that a task was completed
+    public static void CompletedTask(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        Debug.Log($"Client {_fromClient} says they \"{_msg}\"");
+
+        Server.clients[_fromClient].player.completedTasks++;
+
+        NetworkManager.instance.UpdateCompletedTasks(1);
     }
 
     // Read a packet specifying which player was jejected

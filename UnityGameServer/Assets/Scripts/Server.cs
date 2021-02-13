@@ -178,6 +178,7 @@ public class Server
             { (int)ClientPackets.killRequest, ServerHandle.KillRequest },
             { (int)ClientPackets.reportRequest, ServerHandle.ReportRequest },
             { (int)ClientPackets.playerVote, ServerHandle.PlayerVote },
+            { (int)ClientPackets.completedTask, ServerHandle.CompletedTask },
             { (int)ClientPackets.confirmEject, ServerHandle.ConfirmEject },
         };
         Debug.Log("Initialized packets.");

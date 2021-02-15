@@ -51,8 +51,6 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Received a request from the host (client {_fromClient}) to \"{_msg}\"");
-
         // Only start a round if there is no active round
         if (!NetworkManager.instance.activeRound)
         {
@@ -64,8 +62,6 @@ public class ServerHandle
     public static void MeetingRequest(int _fromClient, Packet _packet)
     {
         string _msg = _packet.ReadString();
-
-        Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
 
         // Start a meeting
         NetworkManager.instance.StartMeeting();
@@ -90,8 +86,6 @@ public class ServerHandle
     public static void ReportRequest(int _fromClient, Packet _packet)
     {
         string _msg = _packet.ReadString();
-
-        Debug.Log($"Received a request from client {_fromClient} to \"{_msg}\"");
 
         // Report the dead body to all clients
         ServerSend.ReportBody(_fromClient);
@@ -127,8 +121,6 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Client {_fromClient} says they \"{_msg}\"");
-
         Server.clients[_fromClient].player.completedTasks++;
 
         NetworkManager.instance.UpdateCompletedTasks(1);
@@ -139,8 +131,6 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Client {_fromClient} says they want to \"{_msg}\"");
-
         NetworkManager.instance.AccessLights();
     }
 
@@ -149,8 +139,6 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Client {_fromClient} says they want to \"{_msg}\"");
-
         NetworkManager.instance.AccessLights();
     }
 
@@ -158,8 +146,6 @@ public class ServerHandle
     public static void ConfirmEject(int _fromClient, Packet _packet)
     {
         int ejectedId = _packet.ReadInt();
-
-        Debug.Log($"Client {_fromClient} wants to confirm eject.");
 
         NetworkManager.instance.CheckEjectedPlayer(ejectedId);
     }

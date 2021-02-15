@@ -79,8 +79,10 @@ public class ServerHandle
 
         ServerSend.KillPlayer(fromClient, targetId);
 
-        // Keep track of which crewmate was killed
+        // Keep track of which crewmate was killed, also set their voting status to true
+        //  since they won't be participating in the meetings
         Server.clients[targetId].player.isDead = true;
+        Server.clients[targetId].player.voted = true;
         NetworkManager.instance.crewmateCount--;
     }
 
@@ -103,7 +105,21 @@ public class ServerHandle
     {
         int playerId = _packet.ReadInt();
 
+        Server.clients[_fromClient].player.voted = true;
         ServerSend.PlayerVote(_fromClient, playerId);
+
+        // Check if all players voted, if so end the meeting
+        foreach (Client _client in Server.clients.Values)
+        {
+            // If this player is not dead, reset their voting status
+            if (_client.player != null && !_client.player.voted)
+            {
+                return;
+            }
+        }
+
+        // If we didn't return out of the PlayerVote method, then that must mean everyone voted
+        NetworkManager.instance.meetingTimer = 0;
     }
 
     // Read the packet letting us know that a task was completed
@@ -116,6 +132,26 @@ public class ServerHandle
         Server.clients[_fromClient].player.completedTasks++;
 
         NetworkManager.instance.UpdateCompletedTasks(1);
+    }
+
+    // Read the packet letting us know there was a request to sabotage lights
+    public static void SabotageElectrical(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        Debug.Log($"Client {_fromClient} says they want to \"{_msg}\"");
+
+        NetworkManager.instance.AccessLights();
+    }
+
+    // Read the packet letting us know there was a request to fix the lights
+    public static void FixElectrical(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        Debug.Log($"Client {_fromClient} says they want to \"{_msg}\"");
+
+        NetworkManager.instance.AccessLights();
     }
 
     // Read a packet specifying which player was jejected

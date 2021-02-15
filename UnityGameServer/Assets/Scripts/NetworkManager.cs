@@ -1,4 +1,5 @@
 using UnityEngine;
+using ECM.Controllers;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -6,10 +7,10 @@ public class NetworkManager : MonoBehaviour
 
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints;
-    public float totalTasks, completedTasks;
+    public float totalTasks, completedTasks, meetingTimer, sabotageCooldown, currentCooldown;
     public int playerCount, crewmateCount, imposterCount;
-    public bool activeRound;
-    private float simulationTimer, meetingLength, meetingTimer;
+    public bool activeRound, activeSabotage, activeCooldown;
+    private float simulationTimer, meetingLength;
     private bool activeMeeting, canConfirmEject;
     
     // Make sure there is only once instance of this manager
@@ -23,10 +24,14 @@ public class NetworkManager : MonoBehaviour
             imposterCount = 0;
             totalTasks = 0;
             completedTasks = 0;
-            activeRound = false;
-            simulationTimer = 0;
-            meetingLength = 30;
             meetingTimer = 0;
+            sabotageCooldown = 20;
+            currentCooldown = sabotageCooldown;
+            activeRound = false;
+            activeSabotage = false;
+            activeCooldown = false;
+            simulationTimer = 0;
+            meetingLength = 130;
         }
         else if (instance != this)
         {
@@ -97,12 +102,39 @@ public class NetworkManager : MonoBehaviour
                 activeMeeting = false;
 
                 ServerSend.ResumeRound("Resume the current round!");
+
+                // Reset the voting status of every player
+                foreach (Client _client in Server.clients.Values)
+                {
+                    // If this player is not dead, reset their voting status
+                    if (_client.player != null && !_client.player.isDead)
+                    {
+                        _client.player.voted = false;
+                    }
+                }
             }
             else
             {
                 meetingTimer -= 1 * Time.deltaTime;
 
                 ServerSend.RemainingTime(meetingTimer);
+            }
+        }
+
+        // Check if the cooldown needs to go down in order to start sabotages again
+        if (activeCooldown)
+        {
+            if (currentCooldown <= 0)
+            {
+                activeCooldown = false;
+
+                ServerSend.TimeToSabotage(currentCooldown);
+            }
+            else
+            {
+                currentCooldown -= 1 * Time.deltaTime;
+
+                ServerSend.TimeToSabotage(currentCooldown);
             }
         }
     }
@@ -158,6 +190,7 @@ public class NetworkManager : MonoBehaviour
         {
             if (_client.player != null)
             {
+                _client.player.GetComponent<ServerFirstPersonController>().moveDirection = Vector3.zero;
                 _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
             }
         }
@@ -207,6 +240,23 @@ public class NetworkManager : MonoBehaviour
         ServerSend.TaskUpdate(updatedValue);
     }
 
+    // Turn off the lights for everyone if they are currently on
+    public void AccessLights()
+    {
+        if (!activeSabotage)
+        {
+            ServerSend.TurnOffLights();
+            activeSabotage = true;
+        }
+        else
+        {
+            ServerSend.TurnOnLights();
+            activeSabotage = false;
+            currentCooldown = sabotageCooldown;
+            activeCooldown = true;
+        }
+    }
+
     // Spawn the players into the ship
     private void StartRound()
     {
@@ -242,6 +292,7 @@ public class NetworkManager : MonoBehaviour
                 ServerSend.Winners(_client.id, _winningTeam);
                 _client.player.isImposter = false;
                 _client.player.isDead = false;
+                _client.player.voted = false;
                 _client.player.completedTasks = 0;
                 _client.player.transform.position = lobbySpawnPoints[_client.id - 1].transform.position;
             }
@@ -249,6 +300,8 @@ public class NetworkManager : MonoBehaviour
 
         totalTasks = 0;
         completedTasks = 0;
+        activeSabotage = false;
+        ServerSend.TimeToSabotage(0);
         activeRound = false;
     }
 

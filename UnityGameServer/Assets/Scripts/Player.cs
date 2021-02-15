@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 {
     public int id, colorId, completedTasks;
     public string username;
-    public bool isImposter, isDead;
+    public bool isImposter, isDead, voted;
 
     // Initialize a new player
     public void Initialize(int _id, string _username, int _color)

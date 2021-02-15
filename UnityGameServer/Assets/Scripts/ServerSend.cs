@@ -231,6 +231,39 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server to turn off the lights
+    public static void TurnOffLights()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.turnOffLights))
+        {
+            _packet.Write("Turn the lights off!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server to turn on the lights
+    public static void TurnOnLights()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.turnOnLights))
+        {
+            _packet.Write("Turn on the lights!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server to turn on the lights
+    public static void TimeToSabotage(float _timeToSabotage)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.timeToSabotage))
+        {
+            _packet.Write(_timeToSabotage);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to everyone on the server letting them know which team won
     public static void Winners(int _toClient, string _winningTeam)
     {

@@ -257,13 +257,13 @@ public class Client
         player = NetworkManager.instance.InstantiatePlayer(id);
         player.Initialize(id, _playerName, _color);
         NetworkManager.instance.playerCount++;
-        NetworkManager.instance.crewmateCount++;
 
         // If there is an active round, update the tasks needed to win
         if (NetworkManager.instance.activeRound)
         {
             NetworkManager.instance.totalTasks += 11;
             NetworkManager.instance.UpdateCompletedTasks(0);
+            NetworkManager.instance.crewmateCount++;
         }
 
         // Use this loop to send information on our new player to all other connected players (including the new player)
@@ -299,27 +299,31 @@ public class Client
         {
             if (player != null)
             {
-                // Check if the player is am imposter before disconnecting them
-                if (player.isImposter)
+                // If there is an active round, update the results
+                if (NetworkManager.instance.activeRound)
                 {
-                    // If the player is an imposter and they haven't died, subtract from the imposter count
-                    if (!player.isDead)
+                    // Check if the player is am imposter before disconnecting them
+                    if (player.isImposter)
                     {
-                        NetworkManager.instance.imposterCount--;
+                        // If the player is an imposter and they haven't died, subtract from the imposter count
+                        if (!player.isDead)
+                        {
+                            NetworkManager.instance.imposterCount--;
+                        }
                     }
-                }
-                else
-                {
-                    // If the player is a crewmate and they haven't died, subtract from the crewmate count
-                    if (!player.isDead)
+                    else
                     {
-                        NetworkManager.instance.crewmateCount--;
-                    }
+                        // If the player is a crewmate and they haven't died, subtract from the crewmate count
+                        if (!player.isDead)
+                        {
+                            NetworkManager.instance.crewmateCount--;
+                        }
 
-                    // Update the amount of tasks needed to win
-                    NetworkManager.instance.completedTasks -= player.completedTasks;
-                    NetworkManager.instance.totalTasks -= 11;
-                    NetworkManager.instance.UpdateCompletedTasks(0);
+                        // Update the amount of tasks needed to win
+                        NetworkManager.instance.completedTasks -= player.completedTasks;
+                        NetworkManager.instance.totalTasks -= 11;
+                        NetworkManager.instance.UpdateCompletedTasks(0);
+                    }
                 }
 
                 UnityEngine.Object.Destroy(player.gameObject);

@@ -283,6 +283,12 @@ public class NetworkManager : MonoBehaviour
     // Spawn the players into the lobby
     private void EndRound(string _winningTeam)
     {
+        activeRound = false;
+        activeSabotage = false;
+        completedTasks = 0;
+        totalTasks = 0;
+        ServerSend.TimeToSabotage(0);
+
         // Send the clients the winning team, reset everyone's roles and spawn them in the lobby
         foreach (Client _client in Server.clients.Values)
         {
@@ -296,12 +302,6 @@ public class NetworkManager : MonoBehaviour
                 _client.player.transform.position = lobbySpawnPoints[_client.id - 1].transform.position;
             }
         }
-
-        totalTasks = 0;
-        completedTasks = 0;
-        activeSabotage = false;
-        ServerSend.TimeToSabotage(0);
-        activeRound = false;
     }
 
     // Unity editor does not properly close connections when leaving play mode until you enter play mode again

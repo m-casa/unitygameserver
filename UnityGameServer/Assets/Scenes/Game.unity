@@ -1733,5 +1733,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 8228419419048894742, guid: c44b77613fdcd324ab78089b27ec82dc,
+        type: 3}
+      propertyPath: m_Depth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228419419048894742, guid: c44b77613fdcd324ab78089b27ec82dc,
+        type: 3}
+      propertyPath: far clip plane
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c44b77613fdcd324ab78089b27ec82dc, type: 3}

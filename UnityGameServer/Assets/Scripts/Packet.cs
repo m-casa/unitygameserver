@@ -20,6 +20,8 @@ public enum ServerPackets
     playerVote,
     resumeRound,
     taskUpdate,
+    closeDoor,
+    openDoor,
     turnOffLights,
     turnOnLights,
     timeToSabotage,
@@ -39,6 +41,8 @@ public enum ClientPackets
     reportRequest,
     playerVote,
     completedTask,
+    sabotageDoors,
+    openDoor,
     sabotageElectrical,
     fixElectrical,
     confirmEject

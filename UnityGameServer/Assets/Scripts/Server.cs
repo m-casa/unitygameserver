@@ -179,6 +179,8 @@ public class Server
             { (int)ClientPackets.reportRequest, ServerHandle.ReportRequest },
             { (int)ClientPackets.playerVote, ServerHandle.PlayerVote },
             { (int)ClientPackets.completedTask, ServerHandle.CompletedTask },
+            { (int)ClientPackets.sabotageDoors, ServerHandle.SabotageDoors },
+            { (int)ClientPackets.openDoor, ServerHandle.OpenDoor },
             { (int)ClientPackets.sabotageElectrical, ServerHandle.SabotageElectrical },
             { (int)ClientPackets.fixElectrical, ServerHandle.FixElectrical },
             { (int)ClientPackets.confirmEject, ServerHandle.ConfirmEject },

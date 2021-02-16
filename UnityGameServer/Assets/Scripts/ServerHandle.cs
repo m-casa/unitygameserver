@@ -126,6 +126,46 @@ public class ServerHandle
         NetworkManager.instance.UpdateCompletedTasks(1);
     }
 
+    // Read the packet letting us know there was a request to sabotage doors
+    public static void SabotageDoors(int _fromClient, Packet _packet)
+    {
+        GameObject[] doors = NetworkManager.instance.doors;
+        int numOfDoors = _packet.ReadInt();
+        int currentDoorId;
+
+        // Loop through all the doors the client specified
+        for (int i = 0; i < numOfDoors; i++)
+        {
+            currentDoorId = _packet.ReadInt();
+
+            // If the current door isn't closed, then close it
+            if (!doors[currentDoorId - 1].activeSelf)
+            {
+                doors[currentDoorId - 1].SetActive(true);
+                ServerSend.CloseDoor(currentDoorId);
+            }
+        }
+    }
+
+    // Read the packet letting us know there was a request to open a door
+    public static void OpenDoor(int _fromClient, Packet _packet)
+    {
+        GameObject[] doors = NetworkManager.instance.doors;
+        int doorId = _packet.ReadInt();
+
+        // Loop through each door in the server to find the one that needs to open
+        for (int i = 0; i < doors.Length; i++)
+        {
+            // If the Id specified matches the current door's Id, open this door
+            if (doorId == doors[i].GetComponent<DoorInfo>().doorId)
+            {
+                doors[i].SetActive(false);
+                ServerSend.OpenDoor(doorId);
+                break;
+            }
+        }
+    }
+
     // Read the packet letting us know there was a request to sabotage lights
     public static void SabotageElectrical(int _fromClient, Packet _packet)
     {
@@ -142,7 +182,7 @@ public class ServerHandle
         NetworkManager.instance.AccessLights();
     }
 
-    // Read a packet specifying which player was jejected
+    // Read a packet specifying which player was ejected
     public static void ConfirmEject(int _fromClient, Packet _packet)
     {
         int ejectedId = _packet.ReadInt();

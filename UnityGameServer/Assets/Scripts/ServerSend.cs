@@ -231,6 +231,28 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server to close a specific door
+    public static void CloseDoor(int _doorId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.closeDoor))
+        {
+            _packet.Write(_doorId);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server to open a specific door
+    public static void OpenDoor(int _doorId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.openDoor))
+        {
+            _packet.Write(_doorId);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to everyone on the server to turn off the lights
     public static void TurnOffLights()
     {

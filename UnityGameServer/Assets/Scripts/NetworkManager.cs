@@ -6,10 +6,10 @@ public class NetworkManager : MonoBehaviour
     public static NetworkManager instance;
 
     public GameObject playerPrefab;
-    public GameObject[] lobbySpawnPoints, shipSpawnPoints;
+    public GameObject[] lobbySpawnPoints, shipSpawnPoints, doors;
     public float totalTasks, completedTasks, meetingTimer, sabotageCooldown, currentCooldown;
     public int playerCount, crewmateCount, imposterCount;
-    public bool activeRound, activeSabotage, activeCooldown;
+    public bool activeRound, activeSabotage, lightsOn, activeCooldown;
     private float simulationTimer, meetingLength;
     private bool activeMeeting, canConfirmEject;
     
@@ -29,6 +29,7 @@ public class NetworkManager : MonoBehaviour
             currentCooldown = sabotageCooldown;
             activeRound = false;
             activeSabotage = false;
+            lightsOn = true;
             activeCooldown = false;
             simulationTimer = 0;
             meetingLength = 130;
@@ -102,7 +103,7 @@ public class NetworkManager : MonoBehaviour
 
                 ServerSend.ResumeRound("Resume the current round!");
 
-                // Reset the voting status of every player
+                // Loop through every player
                 foreach (Client _client in Server.clients.Values)
                 {
                     // If this player is not dead, reset their voting status
@@ -189,8 +190,8 @@ public class NetworkManager : MonoBehaviour
         {
             if (_client.player != null)
             {
-                _client.player.GetComponent<ServerFirstPersonController>().moveDirection = Vector3.zero;
                 _client.player.transform.position = shipSpawnPoints[_client.id - 1].transform.position;
+                _client.player.GetComponent<ServerFirstPersonController>().moveDirection = Vector3.zero;
             }
         }
 
@@ -242,15 +243,17 @@ public class NetworkManager : MonoBehaviour
     // Turn off the lights for everyone if they are currently on
     public void AccessLights()
     {
-        if (!activeSabotage)
+        if (!activeSabotage && lightsOn)
         {
             ServerSend.TurnOffLights();
             activeSabotage = true;
+            lightsOn = false;
         }
-        else
+        else if (activeSabotage && !lightsOn)
         {
             ServerSend.TurnOnLights();
             activeSabotage = false;
+            lightsOn = true;
             currentCooldown = sabotageCooldown;
             activeCooldown = true;
         }
@@ -278,6 +281,8 @@ public class NetworkManager : MonoBehaviour
         completedTasks = 0;
         UpdateCompletedTasks(0);
         activeRound = true;
+        currentCooldown = sabotageCooldown;
+        activeCooldown = true;
     }
 
     // Spawn the players into the lobby
@@ -285,6 +290,7 @@ public class NetworkManager : MonoBehaviour
     {
         activeRound = false;
         activeSabotage = false;
+        lightsOn = true;
         completedTasks = 0;
         totalTasks = 0;
         ServerSend.TimeToSabotage(0);

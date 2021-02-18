@@ -92,7 +92,6 @@ MonoBehaviour:
   imposterCount: 0
   activeRound: 0
   activeSabotage: 0
-  lightsOn: 0
   activeCooldown: 0
 --- !u!114 &1110524218416114219
 MonoBehaviour:

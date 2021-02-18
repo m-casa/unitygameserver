@@ -9,7 +9,7 @@ public class NetworkManager : MonoBehaviour
     public GameObject[] lobbySpawnPoints, shipSpawnPoints, doors;
     public float totalTasks, completedTasks, meetingTimer, sabotageCooldown, currentCooldown;
     public int playerCount, crewmateCount, imposterCount;
-    public bool activeRound, activeSabotage, lightsOn, activeCooldown;
+    public bool activeRound, activeSabotage, activeCooldown;
     private float simulationTimer, meetingLength;
     private bool activeMeeting, canConfirmEject;
     
@@ -23,13 +23,9 @@ public class NetworkManager : MonoBehaviour
             crewmateCount = 0;
             imposterCount = 0;
             totalTasks = 0;
-            completedTasks = 0;
-            meetingTimer = 0;
             sabotageCooldown = 20;
-            currentCooldown = sabotageCooldown;
             activeRound = false;
             activeSabotage = false;
-            lightsOn = true;
             activeCooldown = false;
             simulationTimer = 0;
             meetingLength = 130;
@@ -76,66 +72,19 @@ public class NetworkManager : MonoBehaviour
         // If there is an active round, decide when crewmates or imposters win
         if (activeRound)
         {
-            if (crewmateCount == imposterCount)
-            {
-                // End the round and notify players that the imposters have won
-                EndRound("Imposters");
-            }
-            else if (imposterCount == 0)
-            {
-                // End the round and notify players that the crewmates have won
-                EndRound("Crewmates");
-            }
-            else if (completedTasks == totalTasks)
-            {
-                // End the round and notify players that the crewmates have won
-                EndRound("Crewmates");
-            }
+            UpdateRoundStatus();
         }
 
         // If there is an active meeting, decide when to end it
         if (activeMeeting)
         {
-            // Gives the player an update on when the meeting will end
-            if (meetingTimer + 10 <= 0)
-            {
-                activeMeeting = false;
-
-                ServerSend.ResumeRound("Resume the current round!");
-
-                // Loop through every player
-                foreach (Client _client in Server.clients.Values)
-                {
-                    // If this player is not dead, reset their voting status
-                    if (_client.player != null && !_client.player.isDead)
-                    {
-                        _client.player.voted = false;
-                    }
-                }
-            }
-            else
-            {
-                meetingTimer -= 1 * Time.deltaTime;
-
-                ServerSend.RemainingTime(meetingTimer);
-            }
+            UpdateMeetingTime();
         }
 
         // Check if the cooldown needs to go down in order to start sabotages again
         if (activeCooldown)
         {
-            if (currentCooldown <= 0)
-            {
-                activeCooldown = false;
-
-                ServerSend.TimeToSabotage(currentCooldown);
-            }
-            else
-            {
-                currentCooldown -= 1 * Time.deltaTime;
-
-                ServerSend.TimeToSabotage(currentCooldown);
-            }
+            UpdateSabotageCooldown();
         }
     }
 
@@ -235,7 +184,7 @@ public class NetworkManager : MonoBehaviour
 
         completedTasks += _numOfTasks;
 
-        updatedValue = ((totalTasks - (totalTasks - completedTasks)) / totalTasks) * 100;
+        updatedValue = (totalTasks - (totalTasks - completedTasks)) / totalTasks * 100;
 
         ServerSend.TaskUpdate(updatedValue);
     }
@@ -243,17 +192,16 @@ public class NetworkManager : MonoBehaviour
     // Turn off the lights for everyone if they are currently on
     public void AccessLights()
     {
-        if (!activeSabotage && lightsOn)
+        if (!activeSabotage)
         {
             ServerSend.TurnOffLights();
             activeSabotage = true;
-            lightsOn = false;
         }
-        else if (activeSabotage && !lightsOn)
+        else
         {
             ServerSend.TurnOnLights();
             activeSabotage = false;
-            lightsOn = true;
+
             currentCooldown = sabotageCooldown;
             activeCooldown = true;
         }
@@ -281,8 +229,74 @@ public class NetworkManager : MonoBehaviour
         completedTasks = 0;
         UpdateCompletedTasks(0);
         activeRound = true;
+
         currentCooldown = sabotageCooldown;
         activeCooldown = true;
+    }
+
+    // Will update the players whether or not a team has won
+    private void UpdateRoundStatus()
+    {
+        if (crewmateCount == imposterCount)
+        {
+            // End the round and notify players that the imposters have won
+            EndRound("Imposters");
+        }
+        else if (imposterCount == 0)
+        {
+            // End the round and notify players that the crewmates have won
+            EndRound("Crewmates");
+        }
+        else if (completedTasks == totalTasks)
+        {
+            // End the round and notify players that the crewmates have won
+            EndRound("Crewmates");
+        }
+    }
+
+    // Will update the players on the remaining meeting time
+    private void UpdateMeetingTime()
+    {
+        // Gives the player an update on when the meeting will end
+        if (meetingTimer + 10 <= 0)
+        {
+            activeMeeting = false;
+
+            ServerSend.ResumeRound("Resume the current round!");
+
+            // Loop through every player
+            foreach (Client _client in Server.clients.Values)
+            {
+                // If this player is not dead, reset their voting status
+                if (_client.player != null && !_client.player.isDead)
+                {
+                    _client.player.voted = false;
+                }
+            }
+        }
+        else
+        {
+            meetingTimer -= 1 * Time.deltaTime;
+
+            ServerSend.RemainingTime(meetingTimer);
+        }
+    }
+
+    // Will update the imposters on when they can sabotage
+    private void UpdateSabotageCooldown()
+    {
+        if (currentCooldown <= 0)
+        {
+            activeCooldown = false;
+
+            ServerSend.TimeToSabotage(currentCooldown);
+        }
+        else
+        {
+            currentCooldown -= 1 * Time.deltaTime;
+
+            ServerSend.TimeToSabotage(currentCooldown);
+        }
     }
 
     // Spawn the players into the lobby
@@ -290,10 +304,13 @@ public class NetworkManager : MonoBehaviour
     {
         activeRound = false;
         activeSabotage = false;
-        lightsOn = true;
         completedTasks = 0;
         totalTasks = 0;
         ServerSend.TimeToSabotage(0);
+        foreach (GameObject door in doors)
+        {
+            door.SetActive(false);
+        }
 
         // Send the clients the winning team, reset everyone's roles and spawn them in the lobby
         foreach (Client _client in Server.clients.Values)

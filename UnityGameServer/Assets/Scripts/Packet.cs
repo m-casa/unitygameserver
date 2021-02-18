@@ -13,12 +13,12 @@ public enum ServerPackets
     playerPosition,
     playerState,
     playerRole,
-    killPlayer,
-    reportBody,
     meeting,
     remainingTime,
     playerVote,
     resumeRound,
+    killPlayer,
+    reportBody,
     taskUpdate,
     closeDoor,
     openDoor,
@@ -37,15 +37,15 @@ public enum ClientPackets
     playerState,
     roundRequest,
     meetingRequest,
+    playerVote,
+    confirmEject,
     killRequest,
     reportRequest,
-    playerVote,
     completedTask,
     sabotageDoors,
     openDoor,
     sabotageElectrical,
-    fixElectrical,
-    confirmEject
+    fixElectrical
 }
 
 public class Packet : IDisposable

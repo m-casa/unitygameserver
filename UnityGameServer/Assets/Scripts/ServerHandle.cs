@@ -67,6 +67,36 @@ public class ServerHandle
         NetworkManager.instance.StartMeeting();
     }
 
+    // Read the packet letting us know which player was voted for
+    public static void PlayerVote(int _fromClient, Packet _packet)
+    {
+        int playerId = _packet.ReadInt();
+
+        Server.clients[_fromClient].player.voted = true;
+        ServerSend.PlayerVote(_fromClient, playerId);
+
+        // Check if all players voted, if so end the meeting
+        foreach (Client _client in Server.clients.Values)
+        {
+            // If this player is not dead, reset their voting status
+            if (_client.player != null && !_client.player.voted)
+            {
+                return;
+            }
+        }
+
+        // If we didn't return out of the PlayerVote method, then that must mean everyone voted
+        NetworkManager.instance.meetingTimer = 0;
+    }
+
+    // Read a packet specifying which player was ejected
+    public static void ConfirmEject(int _fromClient, Packet _packet)
+    {
+        int ejectedId = _packet.ReadInt();
+
+        NetworkManager.instance.CheckEjectedPlayer(ejectedId);
+    }
+
     // Read a packet specifying which player was just killed
     public static void KillRequest(int _fromClient, Packet _packet)
     {
@@ -92,28 +122,6 @@ public class ServerHandle
 
         // Start a meeting
         NetworkManager.instance.StartMeeting();
-    }
-
-    // Read the packet letting us know which player was voted for
-    public static void PlayerVote(int _fromClient, Packet _packet)
-    {
-        int playerId = _packet.ReadInt();
-
-        Server.clients[_fromClient].player.voted = true;
-        ServerSend.PlayerVote(_fromClient, playerId);
-
-        // Check if all players voted, if so end the meeting
-        foreach (Client _client in Server.clients.Values)
-        {
-            // If this player is not dead, reset their voting status
-            if (_client.player != null && !_client.player.voted)
-            {
-                return;
-            }
-        }
-
-        // If we didn't return out of the PlayerVote method, then that must mean everyone voted
-        NetworkManager.instance.meetingTimer = 0;
     }
 
     // Read the packet letting us know that a task was completed
@@ -153,17 +161,8 @@ public class ServerHandle
         GameObject[] doors = NetworkManager.instance.doors;
         int doorId = _packet.ReadInt();
 
-        // Loop through each door in the server to find the one that needs to open
-        for (int i = 0; i < doors.Length; i++)
-        {
-            // If the Id specified matches the current door's Id, open this door
-            if (doorId == doors[i].GetComponent<DoorInfo>().doorId)
-            {
-                doors[i].SetActive(false);
-                ServerSend.OpenDoor(doorId);
-                break;
-            }
-        }
+        doors[doorId - 1].SetActive(false);
+        ServerSend.OpenDoor(doorId);
     }
 
     // Read the packet letting us know there was a request to sabotage lights
@@ -180,13 +179,5 @@ public class ServerHandle
         string _msg = _packet.ReadString();
 
         NetworkManager.instance.AccessLights();
-    }
-
-    // Read a packet specifying which player was ejected
-    public static void ConfirmEject(int _fromClient, Packet _packet)
-    {
-        int ejectedId = _packet.ReadInt();
-
-        NetworkManager.instance.CheckEjectedPlayer(ejectedId);
     }
 }

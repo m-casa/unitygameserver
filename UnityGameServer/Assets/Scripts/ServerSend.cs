@@ -64,6 +64,7 @@ public class ServerSend
     }
 
     #region Packets
+
     // Sends a welcome packet
     public static void Welcome(int _toClient, string _msg)
     {
@@ -153,28 +154,6 @@ public class ServerSend
         }
     }
 
-    // Sends a packet to everyone on the server letting them know which player died
-    public static void KillPlayer(int _fromClient, int _targetId)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.killPlayer))
-        {
-            _packet.Write(_targetId);
-
-            SendTCPDataToAll(_fromClient, _packet);
-        }
-    }
-
-    // Sends a packet to everyone on the server letting them know to despawn any dead bodies
-    public static void ReportBody(int _reporter)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.reportBody))
-        {
-            _packet.Write(_reporter);
-
-            SendTCPDataToAll(_packet);
-        }
-    }
-
     // Sends a packet to everyone on the server letting them know to attend the meeting
     public static void Meeting(string _msg)
     {
@@ -215,6 +194,28 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.resumeRound))
         {
             _packet.Write(_msg);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know which player died
+    public static void KillPlayer(int _fromClient, int _targetId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.killPlayer))
+        {
+            _packet.Write(_targetId);
+
+            SendTCPDataToAll(_fromClient, _packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server letting them know to despawn any dead bodies
+    public static void ReportBody(int _reporter)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.reportBody))
+        {
+            _packet.Write(_reporter);
 
             SendTCPDataToAll(_packet);
         }
@@ -308,5 +309,6 @@ public class ServerSend
             SendTCPDataToAll(_id, _packet);
         }
     }
+
     #endregion
 }

@@ -7,9 +7,10 @@ public class NetworkManager : MonoBehaviour
 
     public GameObject playerPrefab;
     public GameObject[] lobbySpawnPoints, shipSpawnPoints, doors;
-    public float totalTasks, completedTasks, meetingTimer, sabotageCooldown, currentCooldown;
+    public float totalTasks, completedTasks, meetingTimer, 
+        sabotageCooldown, currentCooldown, timeToWinGame, remainingGameTime;
     public int playerCount, crewmateCount, imposterCount;
-    public bool activeRound, activeSabotage, activeCooldown;
+    public bool activeRound, activeSabotage, activeCooldown, activeEndGame;
     private float simulationTimer, meetingLength;
     private bool activeMeeting, canConfirmEject;
     
@@ -23,10 +24,12 @@ public class NetworkManager : MonoBehaviour
             crewmateCount = 0;
             imposterCount = 0;
             totalTasks = 0;
-            sabotageCooldown = 20;
+            sabotageCooldown = 40;
+            timeToWinGame = 30;
             activeRound = false;
             activeSabotage = false;
             activeCooldown = false;
+            activeEndGame = false;
             simulationTimer = 0;
             meetingLength = 130;
         }
@@ -134,6 +137,14 @@ public class NetworkManager : MonoBehaviour
     // Spawn all the players back in the cafeteria
     public void StartMeeting()
     {
+        // If there's a sabotage that can end the game, reset it
+        if (activeEndGame)
+        {
+            activeSabotage = false;
+            activeEndGame = false;
+            ServerSend.TurnOnO2();
+        }
+
         // Spawn each player back in the cafeteria and begin the meeting
         foreach (Client _client in Server.clients.Values)
         {
@@ -190,21 +201,44 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Turn off the lights for everyone if they are currently on
-    public void AccessLights()
+    public void TurnOffLights()
     {
         if (!activeSabotage)
         {
-            ServerSend.TurnOffLights();
             activeSabotage = true;
+            ServerSend.TurnOffLights();
         }
-        else
-        {
-            ServerSend.TurnOnLights();
-            activeSabotage = false;
+    }
 
-            currentCooldown = sabotageCooldown;
-            activeCooldown = true;
+    // Turn on the lights for everyone if they are currently off
+    public void TurnOnLights()
+    {
+        activeSabotage = false;
+        currentCooldown = sabotageCooldown;
+        activeCooldown = true;
+        ServerSend.TurnOnLights();
+    }
+
+    // Turn off the oxygen for everyone if it is currently on
+    public void TurnOffO2()
+    {
+        if (!activeSabotage)
+        {
+            activeSabotage = true;
+            ServerSend.TurnOffO2();
+            remainingGameTime = timeToWinGame;
+            activeEndGame = true;
         }
+    }
+
+    // Turn on the oxygen for everyone if it is currently off
+    public void TurnOnO2()
+    {
+        activeSabotage = false;
+        activeEndGame = false;
+        currentCooldown = sabotageCooldown;
+        activeCooldown = true;
+        ServerSend.TurnOnO2();
     }
 
     // Spawn the players into the ship
@@ -252,6 +286,22 @@ public class NetworkManager : MonoBehaviour
             // End the round and notify players that the crewmates have won
             EndRound("Crewmates");
         }
+        else if (activeEndGame)
+        {
+            if (remainingGameTime <= 0)
+            {
+                activeEndGame = false;
+
+                // End the round and notify players that the imposters have won
+                EndRound("Imposters");
+            }
+            else
+            {
+                remainingGameTime -= 1 * Time.deltaTime;
+
+                ServerSend.RemainingGameTime(remainingGameTime);
+            }
+        }
     }
 
     // Will update the players on the remaining meeting time
@@ -261,6 +311,13 @@ public class NetworkManager : MonoBehaviour
         if (meetingTimer + 10 <= 0)
         {
             activeMeeting = false;
+
+            // If there's no active sabotage, reset the cooldown
+            if (!activeSabotage)
+            {
+                currentCooldown = sabotageCooldown;
+                activeCooldown = true;
+            }
 
             ServerSend.ResumeRound("Resume the current round!");
 
@@ -304,6 +361,7 @@ public class NetworkManager : MonoBehaviour
     {
         activeRound = false;
         activeSabotage = false;
+        activeEndGame = false;
         completedTasks = 0;
         totalTasks = 0;
         ServerSend.TimeToSabotage(0);

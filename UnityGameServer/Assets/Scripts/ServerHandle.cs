@@ -170,7 +170,7 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        NetworkManager.instance.AccessLights();
+        NetworkManager.instance.TurnOffLights();
     }
 
     // Read the packet letting us know there was a request to fix the lights
@@ -178,6 +178,22 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        NetworkManager.instance.AccessLights();
+        NetworkManager.instance.TurnOnLights();
+    }
+
+    // Read the packet letting us know there was a request to sabotage oxygen
+    public static void SabotageO2(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        NetworkManager.instance.TurnOffO2();
+    }
+
+    // Read the packet letting us know there was a request to fix oxygen
+    public static void FixO2(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        NetworkManager.instance.TurnOnO2();
     }
 }

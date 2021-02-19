@@ -24,6 +24,9 @@ public enum ServerPackets
     openDoor,
     turnOffLights,
     turnOnLights,
+    turnOffO2,
+    turnOnO2,
+    remainingGameTime,
     timeToSabotage,
     winners,
     destroyPlayer
@@ -45,7 +48,9 @@ public enum ClientPackets
     sabotageDoors,
     openDoor,
     sabotageElectrical,
-    fixElectrical
+    fixElectrical,
+    sabotageO2,
+    fixO2
 }
 
 public class Packet : IDisposable

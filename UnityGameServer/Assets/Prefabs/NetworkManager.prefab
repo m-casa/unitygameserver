@@ -87,12 +87,15 @@ MonoBehaviour:
   meetingTimer: 0
   sabotageCooldown: 0
   currentCooldown: 0
+  timeToWinGame: 0
+  remainingGameTime: 0
   playerCount: 0
   crewmateCount: 0
   imposterCount: 0
   activeRound: 0
   activeSabotage: 0
   activeCooldown: 0
+  activeEndGame: 0
 --- !u!114 &1110524218416114219
 MonoBehaviour:
   m_ObjectHideFlags: 0

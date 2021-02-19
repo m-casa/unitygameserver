@@ -276,7 +276,40 @@ public class ServerSend
         }
     }
 
-    // Sends a packet to everyone on the server to turn on the lights
+    // Sends a packet to everyone on the server to turn off the oxygen
+    public static void TurnOffO2()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.turnOffO2))
+        {
+            _packet.Write("Turn off the oxygen!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server to turn on the oxygen
+    public static void TurnOnO2()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.turnOnO2))
+        {
+            _packet.Write("Turn on the oxygen!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server with the remaining game time
+    public static void RemainingGameTime(float _remainingTime)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.remainingGameTime))
+        {
+            _packet.Write(_remainingTime);
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server with remaining sabotage cooldown
     public static void TimeToSabotage(float _timeToSabotage)
     {
         using (Packet _packet = new Packet((int)ServerPackets.timeToSabotage))

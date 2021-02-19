@@ -184,6 +184,8 @@ public class Server
             { (int)ClientPackets.openDoor, ServerHandle.OpenDoor },
             { (int)ClientPackets.sabotageElectrical, ServerHandle.SabotageElectrical },
             { (int)ClientPackets.fixElectrical, ServerHandle.FixElectrical },
+            { (int)ClientPackets.sabotageO2, ServerHandle.SabotageO2 },
+            { (int)ClientPackets.fixO2, ServerHandle.FixO2 },
         };
         Debug.Log("Initialized packets.");
     }

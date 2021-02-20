@@ -298,6 +298,28 @@ public class ServerSend
         }
     }
 
+    // Sends a packet to everyone on the server to meltdown the reactor
+    public static void MeltdownReactor()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.meltdownReactor))
+        {
+            _packet.Write("Meltdowen the reactor!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
+    // Sends a packet to everyone on the server to restore the reactor
+    public static void RestoreReactor()
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.restoreReactor))
+        {
+            _packet.Write("Restore the reactor!");
+
+            SendTCPDataToAll(_packet);
+        }
+    }
+
     // Sends a packet to everyone on the server with the remaining game time
     public static void RemainingGameTime(float _remainingTime)
     {

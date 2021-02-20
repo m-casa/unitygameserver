@@ -117,11 +117,11 @@ public class ServerHandle
     {
         string _msg = _packet.ReadString();
 
-        // Report the dead body to all clients
-        ServerSend.ReportBody(_fromClient);
-
         // Start a meeting
         NetworkManager.instance.StartMeeting();
+
+        // Report the dead body to all clients
+        ServerSend.ReportBody(_fromClient);
     }
 
     // Read the packet letting us know that a task was completed
@@ -195,5 +195,21 @@ public class ServerHandle
         string _msg = _packet.ReadString();
 
         NetworkManager.instance.TurnOnO2();
+    }
+
+    // Read the packet letting us know there was a request to sabotage reactor
+    public static void SabotageReactor(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        NetworkManager.instance.MeltdownReactor();
+    }
+
+    // Read the packet letting us know there was a request to fix reactor
+    public static void FixReactor(int _fromClient, Packet _packet)
+    {
+        string _msg = _packet.ReadString();
+
+        NetworkManager.instance.RestoreReactor();
     }
 }

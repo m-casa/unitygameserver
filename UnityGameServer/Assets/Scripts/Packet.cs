@@ -26,6 +26,8 @@ public enum ServerPackets
     turnOnLights,
     turnOffO2,
     turnOnO2,
+    meltdownReactor,
+    restoreReactor,
     remainingGameTime,
     timeToSabotage,
     winners,
@@ -50,7 +52,9 @@ public enum ClientPackets
     sabotageElectrical,
     fixElectrical,
     sabotageO2,
-    fixO2
+    fixO2,
+    sabotageReactor,
+    fixReactor
 }
 
 public class Packet : IDisposable

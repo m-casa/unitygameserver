@@ -24,8 +24,8 @@ public class NetworkManager : MonoBehaviour
             crewmateCount = 0;
             imposterCount = 0;
             totalTasks = 0;
-            sabotageCooldown = 40;
-            timeToWinGame = 30;
+            sabotageCooldown = 35;
+            timeToWinGame = 35;
             activeRound = false;
             activeSabotage = false;
             activeCooldown = false;
@@ -143,6 +143,7 @@ public class NetworkManager : MonoBehaviour
             activeSabotage = false;
             activeEndGame = false;
             ServerSend.TurnOnO2();
+            ServerSend.RestoreReactor();
         }
 
         // Spawn each player back in the cafeteria and begin the meeting
@@ -239,6 +240,28 @@ public class NetworkManager : MonoBehaviour
         currentCooldown = sabotageCooldown;
         activeCooldown = true;
         ServerSend.TurnOnO2();
+    }
+
+    // Meltdown the reactor for everyone if not sabotaged
+    public void MeltdownReactor()
+    {
+        if (!activeSabotage)
+        {
+            activeSabotage = true;
+            ServerSend.MeltdownReactor();
+            remainingGameTime = timeToWinGame;
+            activeEndGame = true;
+        }
+    }
+
+    // Restore the reactor for everyone if it is melting down
+    public void RestoreReactor()
+    {
+        activeSabotage = false;
+        activeEndGame = false;
+        currentCooldown = sabotageCooldown;
+        activeCooldown = true;
+        ServerSend.RestoreReactor();
     }
 
     // Spawn the players into the ship

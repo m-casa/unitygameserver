@@ -186,6 +186,8 @@ public class Server
             { (int)ClientPackets.fixElectrical, ServerHandle.FixElectrical },
             { (int)ClientPackets.sabotageO2, ServerHandle.SabotageO2 },
             { (int)ClientPackets.fixO2, ServerHandle.FixO2 },
+            { (int)ClientPackets.sabotageReactor, ServerHandle.SabotageReactor },
+            { (int)ClientPackets.fixReactor, ServerHandle.FixReactor },
         };
         Debug.Log("Initialized packets.");
     }

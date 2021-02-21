@@ -9,8 +9,9 @@ public class NetworkManager : MonoBehaviour
     public GameObject[] lobbySpawnPoints, shipSpawnPoints, doors;
     public float totalTasks, completedTasks, meetingTimer, 
         sabotageCooldown, currentCooldown, timeToWinGame, remainingGameTime;
-    public int playerCount, crewmateCount, imposterCount;
-    public bool activeRound, activeSabotage, activeCooldown, activeEndGame;
+    public int playerCount, crewmateCount, imposterCount, O2Count;
+    public bool activeRound, activeSabotage, activeCooldown, activeEndGame,
+        pad1BeingHeld, pad2BeingHeld;
     private float simulationTimer, meetingLength;
     private bool activeMeeting, canConfirmEject;
     
@@ -142,7 +143,7 @@ public class NetworkManager : MonoBehaviour
         {
             activeSabotage = false;
             activeEndGame = false;
-            ServerSend.TurnOnO2();
+            ServerSend.TurnOnO2(3);
             ServerSend.RestoreReactor();
         }
 
@@ -226,6 +227,7 @@ public class NetworkManager : MonoBehaviour
         if (!activeSabotage)
         {
             activeSabotage = true;
+            O2Count = 0;
             ServerSend.TurnOffO2();
             remainingGameTime = timeToWinGame;
             activeEndGame = true;
@@ -233,13 +235,21 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Turn on the oxygen for everyone if it is currently off
-    public void TurnOnO2()
+    public void TurnOnO2(int _O2PadId)
     {
-        activeSabotage = false;
-        activeEndGame = false;
-        currentCooldown = sabotageCooldown;
-        activeCooldown = true;
-        ServerSend.TurnOnO2();
+        if (O2Count < 1)
+        {
+            O2Count++;
+            ServerSend.TurnOnO2(_O2PadId);
+        }
+        else
+        {
+            activeSabotage = false;
+            activeEndGame = false;
+            currentCooldown = sabotageCooldown;
+            activeCooldown = true;
+            ServerSend.TurnOnO2(3);
+        }
     }
 
     // Meltdown the reactor for everyone if not sabotaged
@@ -255,13 +265,27 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Restore the reactor for everyone if it is melting down
-    public void RestoreReactor()
+    public void RestoreReactor(int _reactorPadId, bool _isBeingHeld)
     {
-        activeSabotage = false;
-        activeEndGame = false;
-        currentCooldown = sabotageCooldown;
-        activeCooldown = true;
-        ServerSend.RestoreReactor();
+        if (_reactorPadId == 0)
+        {
+            pad1BeingHeld = _isBeingHeld;
+        }
+        else if (_reactorPadId == 1)
+        {
+            pad2BeingHeld = _isBeingHeld;
+        }
+
+        if (pad1BeingHeld && pad2BeingHeld)
+        {
+            activeSabotage = false;
+            activeEndGame = false;
+            currentCooldown = sabotageCooldown;
+            activeCooldown = true;
+            ServerSend.RestoreReactor();
+            pad1BeingHeld = false;
+            pad2BeingHeld = false;
+        }
     }
 
     // Spawn the players into the ship

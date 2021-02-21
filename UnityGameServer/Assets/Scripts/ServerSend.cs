@@ -288,11 +288,11 @@ public class ServerSend
     }
 
     // Sends a packet to everyone on the server to turn on the oxygen
-    public static void TurnOnO2()
+    public static void TurnOnO2(int _O2PadId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.turnOnO2))
         {
-            _packet.Write("Turn on the oxygen!");
+            _packet.Write(_O2PadId);
 
             SendTCPDataToAll(_packet);
         }

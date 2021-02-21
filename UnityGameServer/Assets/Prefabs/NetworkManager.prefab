@@ -92,10 +92,13 @@ MonoBehaviour:
   playerCount: 0
   crewmateCount: 0
   imposterCount: 0
+  O2Count: 0
   activeRound: 0
   activeSabotage: 0
   activeCooldown: 0
   activeEndGame: 0
+  pad1BeingHeld: 0
+  pad2BeingHeld: 0
 --- !u!114 &1110524218416114219
 MonoBehaviour:
   m_ObjectHideFlags: 0

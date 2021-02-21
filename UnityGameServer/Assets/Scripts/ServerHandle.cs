@@ -192,9 +192,9 @@ public class ServerHandle
     // Read the packet letting us know there was a request to fix oxygen
     public static void FixO2(int _fromClient, Packet _packet)
     {
-        string _msg = _packet.ReadString();
+        int _O2PadId = _packet.ReadInt();
 
-        NetworkManager.instance.TurnOnO2();
+        NetworkManager.instance.TurnOnO2(_O2PadId);
     }
 
     // Read the packet letting us know there was a request to sabotage reactor
@@ -208,8 +208,9 @@ public class ServerHandle
     // Read the packet letting us know there was a request to fix reactor
     public static void FixReactor(int _fromClient, Packet _packet)
     {
-        string _msg = _packet.ReadString();
+        int _reactorPadId = _packet.ReadInt();
+        bool _isBeingHeld = _packet.ReadBool();
 
-        NetworkManager.instance.RestoreReactor();
+        NetworkManager.instance.RestoreReactor(_reactorPadId, _isBeingHeld);
     }
 }

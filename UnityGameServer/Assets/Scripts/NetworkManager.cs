@@ -136,7 +136,7 @@ public class NetworkManager : MonoBehaviour
     }
 
     // Spawn all the players back in the cafeteria
-    public void StartMeeting()
+    public void StartMeeting(int _beginType)
     {
         // If there's a sabotage that can end the game, reset it
         if (activeEndGame)
@@ -157,7 +157,7 @@ public class NetworkManager : MonoBehaviour
             }
         }
 
-        ServerSend.Meeting("The meeting has begun!");
+        ServerSend.Meeting(_beginType);
 
         meetingTimer = meetingLength - 10;
         activeMeeting = true;

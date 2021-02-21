@@ -64,7 +64,7 @@ public class ServerHandle
         string _msg = _packet.ReadString();
 
         // Start a meeting
-        NetworkManager.instance.StartMeeting();
+        NetworkManager.instance.StartMeeting(1);
     }
 
     // Read the packet letting us know which player was voted for
@@ -118,7 +118,7 @@ public class ServerHandle
         string _msg = _packet.ReadString();
 
         // Start a meeting
-        NetworkManager.instance.StartMeeting();
+        NetworkManager.instance.StartMeeting(2);
 
         // Report the dead body to all clients
         ServerSend.ReportBody(_fromClient);

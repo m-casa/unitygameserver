@@ -155,11 +155,11 @@ public class ServerSend
     }
 
     // Sends a packet to everyone on the server letting them know to attend the meeting
-    public static void Meeting(string _msg)
+    public static void Meeting(int _beginType)
     {
         using (Packet _packet = new Packet((int)ServerPackets.meeting))
         {
-            _packet.Write(_msg);
+            _packet.Write(_beginType);
 
             SendTCPDataToAll(_packet);
         }

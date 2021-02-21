@@ -78,7 +78,6 @@ public class ServerHandle
         // Check if all players voted, if so end the meeting
         foreach (Client _client in Server.clients.Values)
         {
-            // If this player is not dead, reset their voting status
             if (_client.player != null && !_client.player.voted)
             {
                 return;

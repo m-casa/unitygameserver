@@ -172,7 +172,7 @@ public class ServerSend
         {
             _packet.Write(_meetingTimer);
 
-            SendTCPDataToAll(_packet);
+            SendUDPDataToAll(_packet);
         }
     }
 
@@ -327,7 +327,7 @@ public class ServerSend
         {
             _packet.Write(_remainingTime);
 
-            SendTCPDataToAll(_packet);
+            SendUDPDataToAll(_packet);
         }
     }
 
@@ -338,7 +338,7 @@ public class ServerSend
         {
             _packet.Write(_timeToSabotage);
 
-            SendTCPDataToAll(_packet);
+            SendUDPDataToAll(_packet);
         }
     }
 

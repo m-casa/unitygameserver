@@ -46,10 +46,10 @@ public class Server
         udpListener = new UdpClient(port);
 
         // Will reset the udp listener if an exception occurs and closes the connection
-        uint IOC_IN = 0x80000000;
-        uint IOC_VENDOR = 0x18000000;
-        uint SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
-        udpListener.Client.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
+        //uint IOC_IN = 0x80000000;
+        //uint IOC_VENDOR = 0x18000000;
+        //uint SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+        //udpListener.Client.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
 
         // Accept any client that attempts to connect
         udpListener.BeginReceive(UDPReceiveCallback, null);

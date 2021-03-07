@@ -26,7 +26,7 @@ public class NetworkManager : MonoBehaviour
             imposterCount = 0;
             totalTasks = 0;
             sabotageCooldown = 35;
-            timeToWinGame = 35;
+            timeToWinGame = 40;
             activeRound = false;
             activeSabotage = false;
             activeCooldown = false;
